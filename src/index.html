@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<script src="index.ts"></script>
+	<link rel="stylesheet" href="index.scss">
+</head>
+<body onload="main()">
+	<canvas id="MainCanvas"></canvas>
+
+	<div id="config">
+		<div>
+			<label>Chord</label>
+			<input type="text" name="ChordInput" id="ChordInput" value="Cmaj7">
+		</div>
+		<div>
+			<label>Tuning</label>
+			<input type="text" name="StringsInput" id="StringsInput" value="BEADGBE" oninput="setStrings(this.value)">
+			<button onclick="setStrings('EADGBE')" >6 Std.</button>
+			<button onclick="setStrings('BEADGBE')">7 Std.</button>
+			<button onclick="setStrings('AEADGBE')">7 Drop-A</button>
+		</div>
+		<button id="SaveButton">Save as PNG</button>
+	</div>
+</body>
+</html>
