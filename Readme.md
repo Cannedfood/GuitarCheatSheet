@@ -18,5 +18,15 @@ You can also download the html file, it has no dependencies and works offline.
 
 # Development
 
+## Used Libraries
+
+- Compilation/Bundling
+  - [parcel-bundler](https://parceljs.org/): No-Configuration bundler
+  - [parcel-plugin-inliner](https://github.com/shff/parcel-plugin-inliner#readme): Makes the output html standalone)
+- Music Theory
+  - [tonaljs](https://github.com/tonaljs/tonal)
+
+## Building and running
 - `npm run watch`: Start a local webserver that updates the site when you save
 - `npm run build`: Compiles the app into the `dist/` folder and copies the output to `index.html`
+
