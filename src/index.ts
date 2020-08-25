@@ -16,14 +16,27 @@ class Fretboard {
 	{
 		frets: "#555",
 		backgroundHighlight: "#888",
-		strings: "#FFF"
+		strings: "#FFF",
+		noteBorder: "#000",
+		inlay: "#888",
+		noteColors: {
+			"default":    { fill: '#BBB', text: '#FFF' },
+			"highlight1": { fill: '#FAA', text: '#FFF' },
+			"highlight2": { fill: '#AFA', text: '#FFF' },
+		},
 	}
 	/*/
 	{
 		frets: "#555",
 		backgroundHighlight: "#CCC",
 		strings: "#000",
-		noteBorder: "#000"
+		noteBorder: "#000",
+		inlay: "#444",
+		noteColors: {
+			"default":    { fill: '#000', text: '#FFF', border: null },
+			"highlight1": { fill: '#F22', text: '#FFF', border: null },
+			"highlight2": { fill: '#2F2', text: '#FFF', border: null },
+		},
 	}
 	/**/
 
@@ -98,22 +111,18 @@ class Fretboard {
 	}
 
 	drawNote(string: number, fret: number, text?: string, style: "default"|"highlight1"|"highlight2" = "default") {
-		const styleMap = {
-			"default": "#BBB",
-			"highlight1": "#FAA",
-			"highlight2": "#AFA",
-		};
-
-		let colors = styleMap[style];
+		let fillColor = this.colors.noteColors[style].fill || '#000';
+		let textColor = this.colors.noteColors[style].text || '#FFF';
+		let borderColor = this.colors.noteColors[style].border || fillColor || '#000';
 
 		let x = this.fretCenter(fret);
 		let y = this.stringCenter(string);
 
-		let radius = this.stringHeight * .5 - 3;
+		let radius = this.stringHeight * .5 - 5;
 
 		this.graphics.beginPath();
-		this.graphics.fillStyle = colors;
-		this.graphics.strokeStyle = this.colors.noteBorder;
+		this.graphics.fillStyle = fillColor;
+		this.graphics.strokeStyle = borderColor;
 		this.graphics.arc(x, y, radius, 0, 2 * Math.PI);
 		this.graphics.fill();
 		this.graphics.stroke();
@@ -121,7 +130,7 @@ class Fretboard {
 		if(text) {
 			this.graphics.textAlign = "center";
 			this.graphics.textBaseline = "middle";
-			this.graphics.fillStyle = "#000";
+			this.graphics.fillStyle = textColor;
 			this.graphics.font = "20px Arial"
 			this.graphics.fillText(text, x, y);
 		}
@@ -133,6 +142,8 @@ class Fretboard {
 		let doubleDotted = [12, 24];
 		let singleDotted = [3, 5, 7, 9, 15, 17, 19, 21, 24];
 
+		// TODO: draw text
+
 		for(let fret of doubleDotted) {
 			if(fret > this.minFret + this.numFrets) continue;
 			if(fret < this.minFret) continue;
@@ -141,7 +152,7 @@ class Fretboard {
 			this.graphics.beginPath();
 			this.graphics.arc(x, this.stringTop(0), 10, 0, Math.PI * 2);
 			this.graphics.arc(x, this.stringBottom(this.strings.length - 1), 10, 0, Math.PI * 2);
-			this.graphics.fillStyle = "#888";
+			this.graphics.fillStyle = this.colors.inlay;
 			this.graphics.fill();
 		}
 
@@ -157,7 +168,7 @@ class Fretboard {
 
 			this.graphics.beginPath();
 			this.graphics.arc(x, y, 10, 0, Math.PI * 2);
-			this.graphics.fillStyle = "#888";
+			this.graphics.fillStyle = this.colors.inlay;
 			this.graphics.fill();
 		}
 	}
@@ -170,11 +181,12 @@ class Fretboard {
 		return Math.floor((x - this.fretPosition(0)) / this.fretWidth);
 	}
 
-	saveAsImage() {
+	saveAsImage(filename: string = "Fretboard.png") {
 		let image = this.canvas.toDataURL("image/png", 1).replace('image/png', 'image/octet-stream');
 
 		let dlLink = document.createElement('a');
 		dlLink.setAttribute('href', image);
+		dlLink.setAttribute('download', filename);
 		dlLink.click();
 	}
 };
@@ -188,10 +200,16 @@ function main() {
 
 	let highlight = null;
 
-	let chord = Chord.get("Cmaj7");
-
 	function redraw() {
 		fretboard.clear();
+
+		let mode =
+			(document.getElementById("ModeSelect") as HTMLSelectElement)
+			.value.toLowerCase() as "chord"|"scale";
+		let noteCollectionName = (document.getElementById("ChordInput") as HTMLInputElement).value;
+		let noteCollection = (mode == "chord")? Chord.get(noteCollectionName) : Scale.get(noteCollectionName);
+
+		fretboard.strings = [...(document.getElementById("StringsInput") as HTMLInputElement).value]
 
 		if(highlight) {
 			fretboard.highlightFret(highlight.fret, highlight.string);
@@ -200,24 +218,21 @@ function main() {
 		fretboard.drawInlays();
 		fretboard.drawFrets();
 		fretboard.drawStrings();
-	
-		fretboard.drawNote(5, 5, "C#");
 
 		for(let string = 0; string < fretboard.strings.length; string++) {
 			let note = fretboard.strings[string];
 			for(let fret = 0; fret <= fretboard.numFrets; fret++) {
-				const positionInChord = chord.notes.findIndex(n => (Note.pitchClass(n) == Note.pitchClass(note)));
+				const positionInChord = noteCollection.notes.findIndex(n => (Note.pitchClass(n) == Note.pitchClass(note)));
 				if(positionInChord >= 0) {
-					let interval = chord.intervals[positionInChord];
+					let interval = noteCollection.intervals[positionInChord];
 
 					const intervalNameMapping = {
 						'1P': 'R',
-						'2m': '2',
-						'2M': '2',
-						'3m': '3',
-						'3M': '3',
+						'2m': '2', '2M': '2',
+						'3m': '3', '3M': '3',
 						'4P': '4',
-						'5P': '5',
+						'5d': '5', '5P': '5',
+						'6m': '6', '6M': '6',
 						'7m': '7',
 						'7M': '7',
 					};
@@ -226,7 +241,7 @@ function main() {
 					fretboard.drawNote(
 						string, fret,
 						name,
-						"default"
+						name == "R"? "highlight1" : "default"
 					);
 				}
 				note = Note.simplify(Note.transpose(note, "m2"));
@@ -234,6 +249,8 @@ function main() {
 		}
 	}
 	redraw();
+
+	(window as any).redraw = redraw;
 
 	canvas.addEventListener('mousemove', e => {
 		highlight = {
@@ -247,24 +264,12 @@ function main() {
 		redraw();
 	});
 
-	let chordInput = document.getElementById("ChordInput") as HTMLInputElement;
-	chordInput.addEventListener('change', e => {
-		console.log(chordInput.value);
-		chord = Chord.get(chordInput.value);
-		redraw();
-	});
-
-	let stringsInput = document.getElementById("StringsInput") as HTMLInputElement;
-	(window as any).setStrings = (strings: string) => {
-		if(stringsInput.value != strings) {
-			stringsInput.value = strings;
-		}
-		fretboard.strings = [...stringsInput.value];
-		redraw();
-	};
-
 	document.getElementById('SaveButton').addEventListener('click', e => {
-		fretboard.saveAsImage();
+		let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
+		let type    = (document.getElementById('ModeSelect')   as HTMLSelectElement).value;
+		let name    = (document.getElementById('ChordInput')   as HTMLInputElement).value;
+
+		fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
 	});
 }
 
