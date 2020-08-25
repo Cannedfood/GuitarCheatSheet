@@ -40,19 +40,31 @@ export default class Fretboard {
 
 	public constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
+
+		// Use more pixels for high-dpi devices
+		var dpr = window.devicePixelRatio || 1;
+		var rect = canvas.getBoundingClientRect();
+		canvas.width  = rect.width * dpr;
+		canvas.height = rect.height * dpr;
+
 		this.graphics = canvas.getContext('2d');
+		this.graphics.scale(dpr, dpr);
+
 		this.width = canvas.width;
 		this.height = canvas.height;
 	}
+
+	get dpx(): number { return Math.ceil(this.width  / 2000); }
+	get dpy(): number { return Math.ceil(this.height / 200); }
 
 	get stringHeight(): number { return this.height / this.strings.length; }
 	get fretWidth():    number { return (this.width - this.left) / this.numFrets; }
 	get fretOffset():   number { return this.fretWidth; }
 
-	get left():   number { return 50; }
+	get left():   number { return this.width / (3 * this.numFrets + 2); }
 	get right():  number { return this.width; }
 	get top():    number { return 0; }
-	get bottom(): number { return this.height; }
+	get bottom(): number { return this.top + this.height; }
 
 	fretPosition(fret: number): number { return this.left + Math.ceil(fret * this.fretWidth)}
 	fretCenter  (fret: number): number {
@@ -71,7 +83,7 @@ export default class Fretboard {
 
 	drawFrets() {
 		this.graphics.beginPath();
-		this.graphics.lineWidth = 6;
+		this.graphics.lineWidth = 6 * this.dpx;
 		this.graphics.strokeStyle = this.colors.frets;
 		for(let i = 0; i < this.numFrets; i++) {
 			let x = this.fretPosition(i);
@@ -98,7 +110,7 @@ export default class Fretboard {
 
 	drawStrings() {
 		this.graphics.beginPath();
-		this.graphics.lineWidth = 1;
+		this.graphics.lineWidth = 1 * this.dpy;
 		this.graphics.strokeStyle = this.colors.strings;
 		for(let i = 0; i < this.strings.length; i++) {
 			let y = this.stringCenter(i);
@@ -117,6 +129,8 @@ export default class Fretboard {
 		let y = this.stringCenter(string);
 
 		let radius = this.stringHeight * .5 - 5;
+		let fontSize = Math.ceil(radius);
+		console.log(fontSize)
 
 		this.graphics.beginPath();
 		this.graphics.fillStyle = fillColor;
@@ -129,7 +143,7 @@ export default class Fretboard {
 			this.graphics.textAlign = "center";
 			this.graphics.textBaseline = "middle";
 			this.graphics.fillStyle = textColor;
-			this.graphics.font = "20px Arial"
+			this.graphics.font = `${fontSize}px Arial`;
 			this.graphics.fillText(text, x, y);
 		}
 	}
