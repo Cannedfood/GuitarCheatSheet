@@ -20,7 +20,7 @@
 		</div>
 		<div>
 			<label>Tuning</label>
-			<input type="text" name="StringsInput" id="StringsInput" value="BEADGBE" oninput="setStrings(this.value)">
+			<input type="text" name="StringsInput" id="StringsInput" value="BEADGBE" onchange="redraw()">
 			<button onclick="document.getElementById('StringsInput').value = 'EADGBE'; redraw();" >6 Std.</button>
 			<button onclick="document.getElementById('StringsInput').value = 'BEADGBE'; redraw();">7 Std.</button>
 			<button onclick="document.getElementById('StringsInput').value = 'AEADGBE'; redraw();">7 Drop-A</button>
