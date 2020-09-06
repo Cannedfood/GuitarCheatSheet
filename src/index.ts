@@ -12,6 +12,16 @@ function main() {
 	let highlight = null;
 
 	function redraw() {
+		let theme = (document.getElementById("ThemeSelect") as HTMLSelectElement).value;
+		fretboard.colors = Fretboard.ColorThemes[theme];
+
+		let themeClass = `theme-${theme}`;
+		if(!document.body.classList.contains(themeClass)) {
+			document.body.classList.remove('theme-Dark');
+			document.body.classList.remove('theme-Light');
+			document.body.classList.add(themeClass);
+		}
+
 		fretboard.clear();
 
 		let mode =

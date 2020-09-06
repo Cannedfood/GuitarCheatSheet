@@ -12,11 +12,11 @@
 
 	<div id="config">
 		<div>
-			<select id="ModeSelect" onchange="redraw()">
+			<select id="ModeSelect" onchange="redraw()" class="label">
 				<option>Chord</option>
 				<option>Scale</option>
 			</select>
-			<input type="text" name="ChordInput" id="ChordInput" value="Cmaj7" onchange="redraw()">
+			<input type="text" name="ChordInput" id="ChordInput" value="C major" onchange="redraw()">
 		</div>
 		<div>
 			<label>Tuning</label>
@@ -24,6 +24,13 @@
 			<button onclick="document.getElementById('StringsInput').value = 'EADGBE'; redraw();" >6 Std.</button>
 			<button onclick="document.getElementById('StringsInput').value = 'BEADGBE'; redraw();">7 Std.</button>
 			<button onclick="document.getElementById('StringsInput').value = 'AEADGBE'; redraw();">7 Drop-A</button>
+		</div>
+		<div>
+			<label>Theme</label>
+			<select id="ThemeSelect" onchange="redraw()">
+				<option>Light</option>
+				<option>Dark</option>
+			</select>
 		</div>
 		<button id="SaveButton">Save as PNG</button>
 	</div>

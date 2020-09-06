@@ -1,4 +1,31 @@
 export default class Fretboard {
+	public static ColorThemes = {
+		Light: {
+			frets: "#555",
+			backgroundHighlight: "#CCC",
+			strings: "#000",
+			noteBorder: "#000",
+			inlay: "#444",
+			noteColors: {
+				"default":    { fill: '#000', text: '#FFF', border: null },
+				"highlight1": { fill: '#F22', text: '#FFF', border: null },
+				"highlight2": { fill: '#2F2', text: '#FFF', border: null },
+			},
+		},
+		Dark: {
+			frets: "#555",
+			backgroundHighlight: "#888",
+			strings: "#FFF",
+			noteBorder: "#000",
+			inlay: "#888",
+			noteColors: {
+				"default":    { fill: '#FFF', text: '#000' },
+				"highlight1": { fill: '#F22', text: '#FFF' },
+				"highlight2": { fill: '#AFA', text: '#FFF' },
+			},
+		}
+	}
+
 	canvas: HTMLCanvasElement;
 	graphics: CanvasRenderingContext2D;
 
@@ -9,34 +36,7 @@ export default class Fretboard {
 	minFret  = 0;
 	numFrets = 12;
 
-	colors =
-	/** /
-	{
-		frets: "#555",
-		backgroundHighlight: "#888",
-		strings: "#FFF",
-		noteBorder: "#000",
-		inlay: "#888",
-		noteColors: {
-			"default":    { fill: '#BBB', text: '#FFF' },
-			"highlight1": { fill: '#FAA', text: '#FFF' },
-			"highlight2": { fill: '#AFA', text: '#FFF' },
-		},
-	}
-	/*/
-	{
-		frets: "#555",
-		backgroundHighlight: "#CCC",
-		strings: "#000",
-		noteBorder: "#000",
-		inlay: "#444",
-		noteColors: {
-			"default":    { fill: '#000', text: '#FFF', border: null },
-			"highlight1": { fill: '#F22', text: '#FFF', border: null },
-			"highlight2": { fill: '#2F2', text: '#FFF', border: null },
-		},
-	}
-	/**/
+	colors = Fretboard.ColorThemes.Light;
 
 	public constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
@@ -120,7 +120,7 @@ export default class Fretboard {
 		this.graphics.stroke();
 	}
 
-	drawNote(string: number, fret: number, text?: string, style: "default"|"highlight1"|"highlight2" = "default") {
+	drawNote(string: number, fret: number, text?: string, style: "default"|"highlight1"|"highlight2"|string = "default") {
 		let fillColor = this.colors.noteColors[style].fill || '#000';
 		let textColor = this.colors.noteColors[style].text || '#FFF';
 		let borderColor = this.colors.noteColors[style].border || fillColor || '#000';
