@@ -2,24 +2,21 @@ export default class Fretboard {
 	public static ColorThemes = {
 		Light: {
 			frets: "#555",
-			backgroundHighlight: "#CCC",
+			backgroundHighlight: "rgb(0,0,0,.2)",
 			strings: "#000",
-			noteBorder: "#000",
 			inlay: "#444",
 			noteColors: {
 				"default": { fill: '#000', text: '#FFF', border: null },
-				"R":       { fill: '#F22', text: '#FFF' },
-				"M3":      { fill: '#2F2', text: '#FFF' },
-				"m3":      { fill: '#2F2', text: '#FFF' },
-				"4":       { fill: '#353', text: '#FFF' },
-				"5":       { fill: '#338', text: '#FFF' },
+				"R":       { fill: '#F22' },
+				"3":       { fill: '#000' },
+				"4":       { fill: '#353' },
+				"5":       { fill: '#338' },
 			},
 		},
 		Dark: {
 			frets: "#555",
-			backgroundHighlight: "#888",
+			backgroundHighlight: "rgb(255,255,255,.2)",
 			strings: "#FFF",
-			noteBorder: "#000",
 			inlay: "#888",
 			noteColors: {
 				"default": { fill: '#FFF', text: '#000', border: null },

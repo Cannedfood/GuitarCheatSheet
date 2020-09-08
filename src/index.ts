@@ -1,4 +1,4 @@
-import { Note, Interval, Scale, Chord } from "@tonaljs/tonal"
+import { Note, Scale, Chord } from "@tonaljs/tonal"
 
 import Fretboard from './Fretboard'
 
