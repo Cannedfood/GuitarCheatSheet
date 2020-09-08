@@ -62,7 +62,7 @@ function main() {
 					fretboard.drawNote(
 						string, fret,
 						name,
-						name == "R"? "highlight1" : "default"
+						name
 					);
 				}
 				note = Note.simplify(Note.transpose(note, "m2"));

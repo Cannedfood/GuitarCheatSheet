@@ -7,9 +7,12 @@ export default class Fretboard {
 			noteBorder: "#000",
 			inlay: "#444",
 			noteColors: {
-				"default":    { fill: '#000', text: '#FFF', border: null },
-				"highlight1": { fill: '#F22', text: '#FFF', border: null },
-				"highlight2": { fill: '#2F2', text: '#FFF', border: null },
+				"default": { fill: '#000', text: '#FFF', border: null },
+				"R":       { fill: '#F22', text: '#FFF' },
+				"M3":      { fill: '#2F2', text: '#FFF' },
+				"m3":      { fill: '#2F2', text: '#FFF' },
+				"4":       { fill: '#353', text: '#FFF' },
+				"5":       { fill: '#338', text: '#FFF' },
 			},
 		},
 		Dark: {
@@ -19,9 +22,8 @@ export default class Fretboard {
 			noteBorder: "#000",
 			inlay: "#888",
 			noteColors: {
-				"default":    { fill: '#FFF', text: '#000' },
-				"highlight1": { fill: '#F22', text: '#FFF' },
-				"highlight2": { fill: '#AFA', text: '#FFF' },
+				"default": { fill: '#FFF', text: '#000', border: null },
+				"R":       { fill: '#F22', text: '#FFF' },
 			},
 		}
 	}
@@ -101,8 +103,8 @@ export default class Fretboard {
 			height = this.stringHeight;
 		}
 
-		let x = this.fretPosition(fret);
-		let width = this.fretWidth;
+		const x = this.fretPosition(fret);
+		const width = this.fretWidth;
 
 		this.graphics.fillStyle = this.colors.backgroundHighlight;
 		this.graphics.fillRect(x, y, width, height);
@@ -120,16 +122,19 @@ export default class Fretboard {
 		this.graphics.stroke();
 	}
 
-	drawNote(string: number, fret: number, text?: string, style: "default"|"highlight1"|"highlight2"|string = "default") {
-		let fillColor = this.colors.noteColors[style].fill || '#000';
-		let textColor = this.colors.noteColors[style].text || '#FFF';
-		let borderColor = this.colors.noteColors[style].border || fillColor || '#000';
+	drawNote(string: number, fret: number, text?: string, style: string = "default") {
+		const defaultColors = this.colors.noteColors["default"];
+		const noteColors = this.colors.noteColors[style] || this.colors.noteColors["default"];
 
-		let x = this.fretCenter(fret);
-		let y = this.stringCenter(string);
+		const fillColor   = noteColors.fill   || defaultColors.fill   || '#000';
+		const textColor   = noteColors.text   || defaultColors.text   || '#FFF';
+		const borderColor = noteColors.border || defaultColors.border || fillColor;
 
-		let radius = Math.ceil(this.stringHeight * .4);
-		let fontSize = Math.ceil(radius);
+		const x = this.fretCenter(fret);
+		const y = this.stringCenter(string);
+
+		const radius = Math.ceil(this.stringHeight * .4);
+		const fontSize = Math.ceil(radius);
 
 		this.graphics.beginPath();
 		this.graphics.fillStyle = fillColor;
@@ -150,17 +155,17 @@ export default class Fretboard {
 	drawInlays() {
 		this.graphics.beginPath();
 
-		let doubleDotted = [12, 24];
-		let singleDotted = [3, 5, 7, 9, 15, 17, 19, 21, 24];
+		const doubleDotted = [12, 24];
+		const singleDotted = [3, 5, 7, 9, 15, 17, 19, 21, 24];
 
-		let inlayRadius = Math.ceil(this.stringHeight / 5);
+		const inlayRadius = Math.ceil(this.stringHeight / 5);
 
 		// TODO: draw text
 
 		for(let fret of doubleDotted) {
 			if(fret > this.minFret + this.numFrets) continue;
 			if(fret < this.minFret) continue;
-			let x = this.fretCenter(fret);
+			const x = this.fretCenter(fret);
 
 			this.graphics.beginPath();
 			this.graphics.arc(x, this.stringTop(0), inlayRadius, 0, Math.PI * 2);
@@ -172,8 +177,8 @@ export default class Fretboard {
 		for(let fret of singleDotted) {
 			if(fret > this.minFret + this.numFrets) continue;
 			if(fret < this.minFret) continue;
-			let x = this.fretCenter(fret);
-			let y: number;
+			const x = this.fretCenter(fret);
+			let   y: number;
 			if((this.strings.length % 2) == 0)
 				y = this.stringBottom(this.strings.length / 2);
 			else
@@ -195,7 +200,7 @@ export default class Fretboard {
 	}
 
 	saveAsImage(filename: string = "Fretboard.png") {
-		let image = this.canvas.toDataURL("image/png", 1).replace('image/png', 'image/octet-stream');
+		const image = this.canvas.toDataURL("image/png", 1).replace('image/png', 'image/octet-stream');
 
 		let dlLink = document.createElement('a');
 		dlLink.setAttribute('href', image);
