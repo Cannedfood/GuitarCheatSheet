@@ -1,3 +1,5 @@
+import { Note } from "@tonaljs/tonal";
+
 export default class Fretboard {
 	public static ColorThemes = {
 		Light: {
@@ -194,6 +196,12 @@ export default class Fretboard {
 
 	pickFret(x: number) {
 		return Math.floor((x - this.fretPosition(0)) / this.fretWidth);
+	}
+
+	getNote(string: number, fret: number) {
+		return	Note.fromMidi(
+			Note.midi(this.strings[string] + '4') + fret + 1
+		);
 	}
 
 	saveAsImage(filename: string = "Fretboard.png") {

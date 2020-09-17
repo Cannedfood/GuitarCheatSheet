@@ -1,6 +1,8 @@
-import { Note, Scale, Chord } from "@tonaljs/tonal"
+import { Note, Scale, Chord, Interval } from "@tonaljs/tonal"
 
 import Fretboard from './Fretboard'
+
+import _ from 'underscore'
 
 function main() {
 	let canvas = document.getElementById("MainCanvas") as HTMLCanvasElement;
@@ -10,6 +12,18 @@ function main() {
 	let fretboard = new Fretboard(canvas);
 
 	let highlight = null;
+
+	function parseNoteCollection(s: string) {
+		let notes = s.split(' ');
+		let intervals = []
+
+		let root = Note.get(notes[0]);
+		for(let note of notes) {
+			intervals.push(Interval.distance(root, note));
+		}
+
+		return { notes, intervals };
+	}
 
 	function redraw() {
 		let theme = (document.getElementById("ThemeSelect") as HTMLSelectElement).value;
@@ -26,9 +40,12 @@ function main() {
 
 		let mode =
 			(document.getElementById("ModeSelect") as HTMLSelectElement)
-			.value.toLowerCase() as "chord"|"scale";
+			.value.toLowerCase() as "chord"|"scale"|"notes";
 		let noteCollectionName = (document.getElementById("ChordInput") as HTMLInputElement).value;
-		let noteCollection = (mode == "chord")? Chord.get(noteCollectionName) : Scale.get(noteCollectionName);
+		let noteCollection =
+			(mode == "chord")? Chord.get(noteCollectionName) :
+			(mode == "scale")? Scale.get(noteCollectionName) :
+			(mode == "notes")? {} : null;
 
 		fretboard.strings = [...(document.getElementById("StringsInput") as HTMLInputElement).value]
 
@@ -71,19 +88,62 @@ function main() {
 	}
 	redraw();
 
-	(window as any).redraw = redraw;
+	(window as any).redraw = () => {
+		redraw();
+		updateInfo();
+	};
 
-	canvas.addEventListener('mousemove', e => {
-		highlight = {
+	function updateInfo() {
+		let info = document.getElementById('info');
+
+		let mode =
+			(document.getElementById("ModeSelect") as HTMLSelectElement)
+			.value.toLowerCase() as "chord"|"scale";
+		let noteCollectionName = (document.getElementById("ChordInput") as HTMLInputElement).value;
+		let noteCollection = (mode == "chord")? Chord.get(noteCollectionName) : Scale.get(noteCollectionName);
+
+		let text = [];
+		if(noteCollection) {
+			text.push(
+				noteCollection.notes.join(' ')
+			);
+			text.push(
+				noteCollection.intervals
+				.filter(v => v != '1P')
+				.map(v =>
+					v.endsWith('M')? v.substr(0, 1) :
+					v.endsWith('m')? `<small>${v.substr(0, 1)}</small>` :
+					v.endsWith('P')? v.substr(0, 1) :
+					v.endsWith('A')? `${v.substr(0, 1)}<sup>+</sup>`:
+					v.endsWith('d')? `${v.substr(0, 1)}<sup>o</sup>`:
+					v
+				)
+				.join('')
+			);
+		}
+		if(highlight) {
+			text.push(fretboard.getNote(highlight.string, highlight.fret));
+		}
+
+		info.innerHTML = text.join(', ');
+	}
+	updateInfo();
+
+	let setHighlight = (newHighlight) => {
+		if(!_.isEqual(newHighlight, highlight)) {
+			highlight = newHighlight;
+			updateInfo();
+			redraw();
+		}
+	};
+
+	canvas.addEventListener('mousemove',
+		e => setHighlight({
 			fret: fretboard.pickFret(e.offsetX),
 			string: fretboard.pickString(e.offsetY)
-		};
-		redraw();
-	});
-	canvas.addEventListener('mouseleave', e => {
-		highlight = null;
-		redraw();
-	});
+		})
+	);
+	canvas.addEventListener('mouseleave', e => setHighlight(null));
 
 	document.getElementById('SaveButton').addEventListener('click', e => {
 		let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
