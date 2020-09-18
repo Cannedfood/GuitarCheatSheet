@@ -25,7 +25,32 @@ function main() {
 		return { notes, intervals };
 	}
 
+	function getCurrentNoteCollection() {
+		let mode =
+		(document.getElementById("ModeSelect") as HTMLSelectElement)
+		.value.toLowerCase() as "chord"|"scale"|"notes";
+		let noteCollectionName = (document.getElementById("ChordInput") as HTMLInputElement).value;
+		let noteCollection =
+			(mode == "chord")? Chord.get(noteCollectionName) :
+			(mode == "scale")? Scale.get(noteCollectionName) :
+			(mode == "notes")? parseNoteCollection(noteCollectionName) : null;
+
+		return noteCollection;
+	}
+
+	function parseTuning() {
+		let tuning = [];
+		for(let char of [...(document.getElementById("StringsInput") as HTMLInputElement).value]) {
+			if(char == '#' || char == 'b')
+				tuning[tuning.length - 1] += char;
+			else
+				tuning.push(char);
+		}
+		return tuning;
+	}
+
 	function redraw() {
+		// Get required data
 		let theme = (document.getElementById("ThemeSelect") as HTMLSelectElement).value;
 		fretboard.colors = Fretboard.ColorThemes[theme];
 
@@ -36,24 +61,11 @@ function main() {
 			document.body.classList.add(themeClass);
 		}
 
+		let noteCollection = getCurrentNoteCollection();
+		fretboard.strings = parseTuning();
+
+		// Draw
 		fretboard.clear();
-
-		let mode =
-			(document.getElementById("ModeSelect") as HTMLSelectElement)
-			.value.toLowerCase() as "chord"|"scale"|"notes";
-		let noteCollectionName = (document.getElementById("ChordInput") as HTMLInputElement).value;
-		let noteCollection =
-			(mode == "chord")? Chord.get(noteCollectionName) :
-			(mode == "scale")? Scale.get(noteCollectionName) :
-			(mode == "notes")? parseNoteCollection(noteCollectionName) : null;
-
-		fretboard.strings = [];
-		for(let char of [...(document.getElementById("StringsInput") as HTMLInputElement).value]) {
-			if(char == '#' || char == 'b')
-				fretboard.strings[fretboard.strings.length - 1] += char;
-			else
-				fretboard.strings.push(char);
-		}
 
 		if(highlight) {
 			fretboard.highlightFret(highlight.fret, highlight.string);
@@ -67,7 +79,15 @@ function main() {
 			let note = fretboard.strings[string];
 			for(let fret = 0; fret <= fretboard.numFrets; fret++) {
 				const positionInChord = noteCollection.notes.findIndex(
-					n => ( Note.chroma(n) == Note.chroma(note))
+					n => {
+						const octaveN = Note.octave(n);
+						const octaveNote = Note.octave(note);
+
+						let octaveSameish = octaveN == null || octaveNote == null || octaveN == octaveNote;
+						let chromaSameish = Note.chroma(n) == Note.chroma(note);
+
+						return octaveSameish && chromaSameish;
+					}
 				);
 				if(positionInChord >= 0) {
 					let interval = noteCollection.intervals[positionInChord];
