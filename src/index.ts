@@ -47,7 +47,13 @@ function main() {
 			(mode == "scale")? Scale.get(noteCollectionName) :
 			(mode == "notes")? parseNoteCollection(noteCollectionName) : null;
 
-		fretboard.strings = [...(document.getElementById("StringsInput") as HTMLInputElement).value]
+		fretboard.strings = [];
+		for(let char of [...(document.getElementById("StringsInput") as HTMLInputElement).value]) {
+			if(char == '#' || char == 'b')
+				fretboard.strings[fretboard.strings.length - 1] += char;
+			else
+				fretboard.strings.push(char);
+		}
 
 		if(highlight) {
 			fretboard.highlightFret(highlight.fret, highlight.string);
