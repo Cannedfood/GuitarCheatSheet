@@ -198,10 +198,25 @@ export default class Fretboard {
 		return Math.floor((x - this.fretPosition(0)) / this.fretWidth);
 	}
 
+	pickNote(x: number, y: number): string {
+		return this.getNote(this.pickString(y), this.pickFret(x));
+	}
+
 	getNote(string: number, fret: number) {
-		return	Note.fromMidi(
-			Note.midi(this.strings[string] + '4') + fret + 1
+		let note   = this.strings[string];
+		let octave = Note.octave(note);
+
+		if(!octave)
+			note += '4';
+
+		let result = Note.fromMidi(
+			Note.midi(note) + fret + 1
 		);
+
+		if(!octave)
+			result = Note.pitchClass(result);
+
+		return result;
 	}
 
 	saveAsImage(filename: string = "Fretboard.png") {

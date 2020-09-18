@@ -98,8 +98,8 @@ function main() {
 						'1P': 'R',
 						'2m': '2', '2M': '2',
 						'3m': '3', '3M': '3',
-						'4P': '4',
-						'5d': '5', '5P': '5',
+						'4P': '4', '4A': '4#',
+						'5d': '5b', '5P': '5',
 						'6m': '6', '6M': '6',
 						'7m': '7',
 						'7M': '7',
@@ -174,6 +174,27 @@ function main() {
 		})
 	);
 	canvas.addEventListener('mouseleave', e => setHighlight(null));
+	canvas.addEventListener('click', e => {
+		let note = fretboard.pickNote(e.offsetX, e.offsetY);
+
+		let modeSelect = document.getElementById("ModeSelect") as HTMLSelectElement;
+		let chordInput = document.getElementById("ChordInput") as HTMLInputElement;
+
+		if(modeSelect.value != "Notes") {
+			modeSelect.value = "Notes";
+			chordInput.value = '';
+		}
+
+		let notes = chordInput.value.split(' ').filter(v => v.trim().length);
+		if(_.contains(notes, note)) {
+			notes = notes.filter(n => n != note);
+		}
+		else {
+			notes.push(note);
+		}
+		chordInput.value = notes.join(' ');
+		redraw();
+	});
 
 	document.getElementById('SaveButton').addEventListener('click', e => {
 		let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
