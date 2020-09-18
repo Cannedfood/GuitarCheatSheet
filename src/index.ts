@@ -41,7 +41,9 @@ function main() {
 	function parseTuning() {
 		let tuning = [];
 		for(let char of [...(document.getElementById("StringsInput") as HTMLInputElement).value]) {
-			if(char == '#' || char == 'b')
+			if(char.trim().length == 0)
+				continue;
+			if(char == '#' || char == 'b' || /*is number*/!isNaN(+char))
 				tuning[tuning.length - 1] += char;
 			else
 				tuning.push(char);
