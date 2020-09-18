@@ -60,7 +60,9 @@ function main() {
 		for(let string = 0; string < fretboard.strings.length; string++) {
 			let note = fretboard.strings[string];
 			for(let fret = 0; fret <= fretboard.numFrets; fret++) {
-				const positionInChord = noteCollection.notes.findIndex(n => (Note.pitchClass(n) == Note.pitchClass(note)));
+				const positionInChord = noteCollection.notes.findIndex(
+					n => ( Note.chroma(n) == Note.chroma(note))
+				);
 				if(positionInChord >= 0) {
 					let interval = noteCollection.intervals[positionInChord];
 
