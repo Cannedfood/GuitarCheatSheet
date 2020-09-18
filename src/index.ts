@@ -45,7 +45,7 @@ function main() {
 		let noteCollection =
 			(mode == "chord")? Chord.get(noteCollectionName) :
 			(mode == "scale")? Scale.get(noteCollectionName) :
-			(mode == "notes")? {} : null;
+			(mode == "notes")? parseNoteCollection(noteCollectionName) : null;
 
 		fretboard.strings = [...(document.getElementById("StringsInput") as HTMLInputElement).value]
 
