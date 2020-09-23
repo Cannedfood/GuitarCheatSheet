@@ -10,14 +10,14 @@
   "author": "Benno Straub",
   "license": "ISC",
   "dependencies": {
-    "@tonaljs/tonal": "^4.1.0"
-  },
-  "devDependencies": {
-    "@types/underscore": "^1.10.23",
+    "@tonaljs/tonal": "^4.2.1",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-inliner": "^1.0.14",
-    "sass": "^1.26.10",
+    "sass": "^1.26.11",
     "typescript": "^3.9.7",
     "underscore": "^1.11.0"
+  },
+  "devDependencies": {
+    "@types/underscore": "^1.10.23"
   }
 }
