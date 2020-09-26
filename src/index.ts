@@ -1,4 +1,4 @@
-import { Note, Scale, Chord, Interval } from "@tonaljs/tonal"
+import { Note, Scale, Chord, Interval } from "@tonaljs/tonal";
 
 import Fretboard from './Fretboard'
 
@@ -134,9 +134,10 @@ function main() {
 
 		let text = [];
 		if(noteCollection) {
-			text.push(
-				noteCollection.notes.join(' ')
-			);
+			if(highlight) {
+				text.push(fretboard.getNote(highlight.string, highlight.fret));
+			}
+			text.push(noteCollection.notes.join(' '));
 			text.push(
 				noteCollection.intervals
 				.filter(v => v != '1P')
@@ -150,12 +151,38 @@ function main() {
 				)
 				.join('')
 			);
-		}
-		if(highlight) {
-			text.push(fretboard.getNote(highlight.string, highlight.fret));
+
+			if(mode == "scale") {
+				let modes = Scale.modeNames(noteCollectionName).map(p => `${p[0]} ${p[1]}`);
+				// let extended = Scale.extended(noteCollectionName).map(p => `${noteCollection.tonic} ${p}`);
+				// let reduced  = Scale.reduced(noteCollectionName).map(p => `${noteCollection.tonic} ${p}`);
+
+				let makeLink =
+					(text: string, mode: "Scale"|"Chord") => [
+						'<a onclick="',
+						`document.getElementById('ModeSelect').value = '${mode}'; `,
+						"document.getElementById('ChordInput').value = this.innerText.trim(); ",
+						"redraw(); ",
+						'"',
+						">",
+						text,
+						"</a>"
+					].join('');
+
+				let indices = [0, 2, 4, 6];
+				let seventhChords =
+					modes
+					.map(Scale.get)
+					.map(scale => `${Chord.detect(indices.map(i => scale.notes[i]))[0]}`);
+
+				text.push("Chords: " + seventhChords.map(c => makeLink(c, 'Chord')).join(', '));
+				text.push("Modes: "  + modes.map(m => makeLink(m, 'Scale')).join(', '));
+				// text.push("Extended Scales: " + extended.map(makeLink).join(', '));
+				// text.push("Reduced Scales: "  + reduced.map(makeLink).join(', '));
+			}
 		}
 
-		info.innerHTML = text.join(', ');
+		info.innerHTML = text.join('\n<br>\n');
 	}
 	updateInfo();
 
