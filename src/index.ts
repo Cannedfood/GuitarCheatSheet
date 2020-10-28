@@ -3,6 +3,7 @@ import { Note, Scale, Chord, Interval } from "@tonaljs/tonal";
 import Fretboard from './Fretboard'
 
 import _ from 'underscore'
+import * as Util from "./Util";
 
 class FretboardApp {
 	private _fretboard: Fretboard
@@ -11,19 +12,19 @@ class FretboardApp {
 
 	constructor(fretboard: Fretboard) {
 		this._fretboard = fretboard;
-		this._debouncedRedraw = _.debounce(() => this.redraw(true), 10, false);
+		this._debouncedRedraw = _.debounce(() => this.redraw('force'), 10, true);
 	}
 
 	public get highlight() { return this._highlight; }
 	public set highlight(value) { this._highlight = value; this.redraw(); }
 
 	public redraw(force: "force"|undefined = undefined) {
-		if(force) {
-			this.draw(this._fretboard);
-		}
+		if(!force) this._debouncedRedraw();
+		else       this.draw(this._fretboard);
 	}
 
 	protected draw(fretboard: Fretboard) {
+		fretboard.clear()
 		fretboard.drawInlays()
 		fretboard.drawFrets()
 		fretboard.drawStrings()
@@ -36,18 +37,34 @@ class FretboardApp {
 }
 
 class CheatSheetApp extends FretboardApp {
+	get mode() { return (document.getElementById("ModeSelect") as HTMLSelectElement).value.toLowerCase() as "chord"|"scale"|"notes" }
+	get noteCollectionName() { return (document.getElementById("ChordInput") as HTMLInputElement).value }
+	get noteCollection() {
+		const mode = this.mode;
+		const noteCollectionName = this.noteCollectionName;
+		return (
+			(mode == "chord")? Chord.get(noteCollectionName) :
+			(mode == "scale")? Scale.get(noteCollectionName) :
+			(mode == "notes")? Util.parseNoteCollection(noteCollectionName) :
+			null
+		);
+	}
+
 	constructor(fretboard: Fretboard) {
 		super(fretboard)
 	}
 
 	draw(fretboard: Fretboard) {
 		super.draw(fretboard)
-	}
-}
 
-class NoteTrainingApp extends FretboardApp {
-	draw(fretboard: Fretboard) {
+		const noteCollection = this.noteCollection;
 
+		for (let index = 0; index < noteCollection.notes.length; index++) {
+			const note     = noteCollection.notes[index];
+			const interval = noteCollection.intervals[index];
+
+			fretboard.drawNoteByName(note, Util.betterIntervalName(interval), Util.intervalStyle(interval));
+		}
 	}
 }
 
@@ -60,24 +77,68 @@ function main() {
 
 	let app = new CheatSheetApp(fretboard);
 
-	(window as any).redraw = () => app.redraw();
+	app.redraw("force");
 
-	app.redraw("force")
+	let globals = {
+		redraw: () => app.redraw(),
+		setTuning: (tuning: string) => {
+			(document.getElementById('StringsInput') as HTMLInputElement).value = tuning;
+			(document.getElementById('StringsPresets') as HTMLSelectElement).value = '';
+			fretboard.strings = Util.parseTuning(tuning);
+			app.redraw();
+		},
+		setTheme: (theme: string) => {
+			(document.getElementById('ThemeSelect') as HTMLSelectElement).value = theme;
+
+			let themeClass = `theme-${theme}`;
+			if(!document.body.classList.contains(themeClass)) {
+				document.body.classList.remove('theme-Dark');
+				document.body.classList.remove('theme-Light');
+				document.body.classList.add(themeClass);
+				app.redraw();
+			}
+		}
+	};
+
+	Object.assign(window as any, globals);
+
+	globals.setTuning((document.getElementById('StringsInput') as HTMLInputElement).value);
+	globals.setTheme((document.getElementById('ThemeSelect') as HTMLSelectElement).value);
+
+	canvas.addEventListener('click', e => {
+		let note = fretboard.pickNote(e.offsetX, e.offsetY);
+
+		let modeSelect = document.getElementById("ModeSelect") as HTMLSelectElement;
+		let chordInput = document.getElementById("ChordInput") as HTMLInputElement;
+
+		if(modeSelect.value != "Notes") {
+			modeSelect.value = "Notes";
+			chordInput.value = '';
+		}
+
+		let notes = chordInput.value.split(' ').filter(v => v.trim().length);
+		if(_.contains(notes, note)) {
+			notes = notes.filter(n => n != note);
+		}
+		else {
+			notes.push(note);
+		}
+		chordInput.value = notes.join(' ');
+		app.redraw();
+	});
+
+	canvas.addEventListener('mousemove',
+		e => {
+			app.highlight = {
+				fret: fretboard.pickFret(e.offsetX),
+				string: fretboard.pickString(e.offsetY)
+			}
+		}
+	);
+	canvas.addEventListener('mouseleave', e => (app.highlight = null));
 
 	/*
 	let highlight = null;
-
-	function parseNoteCollection(s: string) {
-		let notes = s.split(' ');
-		let intervals = []
-
-		let root = Note.get(notes[0]);
-		for(let note of notes) {
-			intervals.push(Interval.distance(root, note));
-		}
-
-		return { notes, intervals };
-	}
 
 	function getCurrentNoteCollection() {
 		let mode =
@@ -92,30 +153,12 @@ function main() {
 		return noteCollection;
 	}
 
-	function parseTuning() {
-		let tuning = [];
-		for(let char of [...(document.getElementById("StringsInput") as HTMLInputElement).value]) {
-			if(char.trim().length == 0)
-				continue;
-			if(char == '#' || char == 'b' || !isNaN(+char))
-				tuning[tuning.length - 1] += char;
-			else
-				tuning.push(char);
-		}
-		return tuning;
-	}
-
 	function redraw() {
 		// Get required data
 		let theme = (document.getElementById("ThemeSelect") as HTMLSelectElement).value;
 		fretboard.colors = Fretboard.ColorThemes[theme];
 
-		let themeClass = `theme-${theme}`;
-		if(!document.body.classList.contains(themeClass)) {
-			document.body.classList.remove('theme-Dark');
-			document.body.classList.remove('theme-Light');
-			document.body.classList.add(themeClass);
-		}
+
 
 		let noteCollection = getCurrentNoteCollection();
 		fretboard.strings = parseTuning();
@@ -239,44 +282,7 @@ function main() {
 		info.innerHTML = text.join('\n<br>\n');
 	}
 	updateInfo();
-
-	let setHighlight = (newHighlight) => {
-		if(!_.isEqual(newHighlight, highlight)) {
-			highlight = newHighlight;
-			updateInfo();
-			redraw();
-		}
-	};
-
-	canvas.addEventListener('mousemove',
-		e => setHighlight({
-			fret: fretboard.pickFret(e.offsetX),
-			string: fretboard.pickString(e.offsetY)
-		})
-	);
-	canvas.addEventListener('mouseleave', e => setHighlight(null));
-	canvas.addEventListener('click', e => {
-		let note = fretboard.pickNote(e.offsetX, e.offsetY);
-
-		let modeSelect = document.getElementById("ModeSelect") as HTMLSelectElement;
-		let chordInput = document.getElementById("ChordInput") as HTMLInputElement;
-
-		if(modeSelect.value != "Notes") {
-			modeSelect.value = "Notes";
-			chordInput.value = '';
-		}
-
-		let notes = chordInput.value.split(' ').filter(v => v.trim().length);
-		if(_.contains(notes, note)) {
-			notes = notes.filter(n => n != note);
-		}
-		else {
-			notes.push(note);
-		}
-		chordInput.value = notes.join(' ');
-		redraw();
-	});
-
+	*/
 	document.getElementById('SaveButton').addEventListener('click', e => {
 		let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
 		let type    = (document.getElementById('ModeSelect')   as HTMLSelectElement).value;
@@ -284,7 +290,6 @@ function main() {
 
 		fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
 	});
-	*/
 }
 
 (window as any).main = main;

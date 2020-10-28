@@ -1,5 +1,10 @@
 import { Note } from "@tonaljs/tonal";
 
+export interface FreboardPosition {
+	string: number;
+	fret: number;
+}
+
 export default class Fretboard {
 	public static ColorThemes = {
 		Light: {
@@ -13,6 +18,7 @@ export default class Fretboard {
 				"3":       { fill: '#000' },
 				"4":       { fill: '#353' },
 				"5":       { fill: '#338' },
+				"7":       { fill: '#808' },
 			},
 		},
 		Dark: {
@@ -67,6 +73,33 @@ export default class Fretboard {
 	get top():    number { return 0; }
 	get bottom(): number { return this.top + this.height; }
 
+	public notePositions(note: string): FreboardPosition[] {
+		let result = [] as FreboardPosition[];
+
+		const octave = Note.octave(note);
+		const chroma = Note.chroma(note);
+
+		for(let string = 0; string < this.strings.length; string++) {
+			let fretboardNote = this.strings[string];
+			for(let fret = 0; fret <= this.numFrets; fret++) {
+				const fretboardOctave = Note.octave(fretboardNote);
+
+				const octaveSameish = ( octave == null || fretboardOctave == null || octave == fretboardOctave );
+				const chromaSameish = ( chroma == Note.chroma(fretboardNote) );
+
+				const isSame = octaveSameish && chromaSameish;
+
+				if(isSame) {
+					result.push({string, fret});
+				}
+
+				fretboardNote = Note.simplify(Note.transpose(fretboardNote, "m2"));
+			}
+		}
+
+		return result;
+	}
+
 	fretPosition(fret: number): number { return this.left + Math.ceil(fret * this.fretWidth)}
 	fretCenter  (fret: number): number {
 		if(fret > 0)
@@ -119,6 +152,12 @@ export default class Fretboard {
 			this.graphics.lineTo(this.width, y);
 		}
 		this.graphics.stroke();
+	}
+
+	drawNoteByName(note: string, text?: string, style: string = "default") {
+		for(let position of this.notePositions(note)) {
+			this.drawNote(position.string, position.fret, text, style);
+		}
 	}
 
 	drawNote(string: number, fret: number, text?: string, style: string = "default") {
