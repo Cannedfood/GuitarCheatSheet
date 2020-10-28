@@ -32,6 +32,7 @@ class FretboardApp {
 			fretboard.highlightFret(this.highlight.fret, this.highlight.string);
 			fretboard.highlightString(this.highlight.string);
 		}
+		fretboard.drawFretNumbers()
 	}
 
 	public click(position: FretboardPosition) {}
@@ -93,6 +94,7 @@ function main() {
 	canvas.height = canvas.width / 5;
 
 	let fretboard = new Fretboard(canvas);
+	fretboard.numFrets = 15;
 	let app = new CheatSheetApp(fretboard);
 
 	let globals = {

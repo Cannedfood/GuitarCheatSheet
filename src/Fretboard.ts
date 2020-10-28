@@ -74,8 +74,8 @@ export class Fretboard {
 	get top():    number { return 0; }
 	get bottom(): number { return this.top + this.height; }
 
-	public notePositions(note: string): FreboardPosition[] {
-		let result = [] as FreboardPosition[];
+	public notePositions(note: string): FretboardPosition[] {
+		let result = [] as FretboardPosition[];
 
 		const octave = Note.octave(note);
 		const chroma = Note.chroma(note);
@@ -238,6 +238,20 @@ export class Fretboard {
 			this.graphics.arc(x, y, inlayRadius, 0, Math.PI * 2);
 			this.graphics.fillStyle = this.colors.inlay;
 			this.graphics.fill();
+		}
+	}
+
+	drawFretNumbers() {
+		this.graphics.textAlign = "left";
+		this.graphics.textBaseline = "bottom";
+		this.graphics.font = `${this.stringHeight * .2}px Arial`
+		this.graphics.fillStyle = 'gray';
+		for (let i = 0; i <= this.numFrets; i++) {
+			this.graphics.fillText(
+				`${i + this.minFret}`,
+				this.fretCenter(i + this.minFret),
+				this.bottom
+			)
 		}
 	}
 
