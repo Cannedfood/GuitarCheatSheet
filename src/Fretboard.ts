@@ -143,7 +143,7 @@ export class Fretboard {
 		const width = this.fretWidth;
 
 		this.graphics.fillStyle = this.colors.backgroundHighlight;
-		this.graphics.fillRect(x, y, width, height);
+		this.graphics.fillRect(x - width, y, width, height);
 	}
 
 	highlightString(string: number) {
@@ -263,7 +263,7 @@ export class Fretboard {
 	}
 
 	pickFret(x: number) {
-		return Math.floor((x - this.fretPosition(0)) / this.fretWidth);
+		return Math.floor((x - this.fretPosition(0)) / this.fretWidth) + 1;
 	}
 
 	pickNote(x: number, y: number): string {
@@ -278,7 +278,7 @@ export class Fretboard {
 			note += '4';
 
 		let result = Note.fromMidi(
-			Note.midi(note) + fret + 1
+			Note.midi(note) + fret
 		);
 
 		if(!octave)

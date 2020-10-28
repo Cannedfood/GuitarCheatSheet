@@ -1,4 +1,4 @@
-import { Scale, Chord } from "@tonaljs/tonal";
+import { Scale, Chord, Note } from "@tonaljs/tonal";
 
 import { Fretboard, FretboardPosition } from './Fretboard'
 
@@ -16,7 +16,14 @@ class FretboardApp {
 	}
 
 	public get highlight() { return this._highlight; }
-	public set highlight(value) { this._highlight = value; this.redraw(); }
+	public set highlight(value) {
+		if(!_.isEqual(value, this._highlight)) {
+			this._highlight = value;
+			this.hover(this._highlight);
+			this.redraw();
+		}
+	}
+	public get fretboard() { return this._fretboard; }
 
 	public redraw(force: "force"|undefined = undefined) {
 		if(!force) this._debouncedRedraw();
@@ -36,6 +43,7 @@ class FretboardApp {
 	}
 
 	public click(position: FretboardPosition) {}
+	public hover(position: FretboardPosition) {}
 }
 
 class CheatSheetApp extends FretboardApp {
@@ -88,6 +96,58 @@ class CheatSheetApp extends FretboardApp {
 	}
 }
 
+class NoteTrainer extends FretboardApp {
+	note: FretboardPosition|undefined;
+
+	get changeTime() { return +(document.getElementById('InputChangeInterval') as HTMLInputElement).value }
+	get revealTime() { return +(document.getElementById('InputRevealInterval') as HTMLInputElement).value }
+	get strings()    { return (document.getElementById('InputStringSelection') as HTMLInputElement).value.split(' ').map(v => (+v-1)) }
+
+	constructor(fretboard: Fretboard) {
+		super(fretboard)
+
+		this.nextNote()
+	}
+
+	nextNote() {
+		const strings = this.strings;
+
+		this.note = {
+			fret: Math.floor(Math.random() * 12),
+			string: strings[Math.floor(Math.random() * strings.length)]
+		};
+		// console.log(this.note)
+		this.redraw();
+
+		setTimeout(() => this.revealNote(), this.revealTime);
+	}
+
+	revealNote() {
+		this.note.note = this.fretboard.getNote(this.note.string, this.note.fret);
+		this.redraw();
+
+		setTimeout(() => this.nextNote(), this.changeTime);
+	}
+
+	draw(fretboard: Fretboard) {
+		super.draw(fretboard)
+		let note = this.note;
+		if(note) {
+			fretboard.drawNote(note.string, note.fret, note.note, 'R');
+		}
+	}
+
+	public click(position: FretboardPosition) {
+
+	}
+
+	public hover(position: FretboardPosition) {
+		if(!position) return;
+		const note = this.fretboard.getNote(position.string, position.fret);
+		document.getElementById('info').innerText = note;
+	}
+}
+
 function main() {
 	let canvas = document.getElementById("MainCanvas") as HTMLCanvasElement;
 	canvas.width = document.documentElement.clientWidth;
@@ -95,7 +155,7 @@ function main() {
 
 	let fretboard = new Fretboard(canvas);
 	fretboard.numFrets = 15;
-	let app = new CheatSheetApp(fretboard);
+	let app:FretboardApp = new CheatSheetApp(fretboard);
 
 	let globals = {
 		redraw: () => app.redraw(),

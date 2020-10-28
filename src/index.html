@@ -10,7 +10,7 @@
 <body onload="main()">
 	<canvas id="MainCanvas"></canvas>
 	<div id="info"></div>
-	<div id="config">
+	<div class="config">
 		<div>
 			<select id="ModeSelect" onchange="redraw()" class="label">
 				<option>Chord</option>
@@ -33,6 +33,23 @@
 				<option>C harmonic minor</option>
 			</select> -->
 		</div>
+	</div>
+
+	<div class="config">
+		<div>
+			<label for="InputChangeInterval">Change</label>
+			<input id="InputChangeInterval" type="number" value="2000">ms
+		</div>
+		<div>
+			<label for="InputRevealInterval">Reveal</label>
+			<input id="InputRevealInterval" type="number" value="2000">ms
+		</div>
+		<div>
+			<label for="InputStringSelection">Strings</label>
+			<input id="InputStringSelection" type="text" value="1 2 3 4 5 6 7">
+		</div>
+	</div>
+	<div class="config">
 		<div>
 			<label>Tuning</label>
 			<input
@@ -58,13 +75,6 @@
 			</select>
 		</div>
 		<button id="SaveButton">Save as PNG</button>
-	</div>
-
-	<div class="fretboard">
-		<div class="string">
-			<div class="fret"></div>
-			<div class="fret"></div>
-		</div>
 	</div>
 </body>
 </html>
