@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "parcel src/index.html",
     "build": "parcel build src/index.html && cp dist/index.html .",
-    "commit-build": "npm run build && git commit -m 'Built index.html'"
+    "commit-build": "npm run build && git add index.html && git commit -m 'Built index.html'"
   },
   "author": "Benno Straub",
   "license": "ISC",

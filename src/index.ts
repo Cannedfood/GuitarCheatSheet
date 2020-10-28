@@ -113,6 +113,9 @@ function main() {
 				document.body.classList.remove('theme-Dark');
 				document.body.classList.remove('theme-Light');
 				document.body.classList.add(themeClass);
+
+				fretboard.colors = Fretboard.ColorThemes[theme];
+
 				app.redraw();
 			}
 		}
