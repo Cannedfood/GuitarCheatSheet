@@ -1,11 +1,12 @@
 import { Note } from "@tonaljs/tonal";
 
-export interface FreboardPosition {
+export interface FretboardPosition {
 	string: number;
 	fret: number;
+	note?: string;
 }
 
-export default class Fretboard {
+export class Fretboard {
 	public static ColorThemes = {
 		Light: {
 			frets: "#555",
@@ -142,6 +143,16 @@ export default class Fretboard {
 		this.graphics.fillRect(x, y, width, height);
 	}
 
+	highlightString(string: number) {
+		const y = this.stringCenter(string);
+		this.graphics.lineWidth = 3 * this.dpy;
+		this.graphics.strokeStyle = 'red';
+		this.graphics.beginPath();
+		this.graphics.moveTo(0, y);
+		this.graphics.lineTo(this.width, y);
+		this.graphics.stroke();
+	}
+
 	drawStrings() {
 		this.graphics.beginPath();
 		this.graphics.lineWidth = 1 * this.dpy;
@@ -175,6 +186,7 @@ export default class Fretboard {
 		const fontSize = Math.ceil(radius);
 
 		this.graphics.beginPath();
+		this.graphics.lineWidth = 1;
 		this.graphics.fillStyle = fillColor;
 		this.graphics.strokeStyle = borderColor;
 		this.graphics.arc(x, y, radius, 0, 2 * Math.PI);
