@@ -48,14 +48,17 @@ export class Fretboard {
 
 	public constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
+		this.reconfigureCanvas();
+	}
 
+	public reconfigureCanvas() {
 		// Use more pixels for high-dpi devices
 		var dpr = window.devicePixelRatio || 1;
-		var rect = canvas.getBoundingClientRect();
-		canvas.width  = rect.width * dpr;
-		canvas.height = rect.height * dpr;
+		var rect = this.canvas.getBoundingClientRect();
+		this.canvas.width  = rect.width * dpr;
+		this.canvas.height = rect.height * dpr;
 
-		this.graphics = canvas.getContext('2d');
+		this.graphics = this.canvas.getContext('2d');
 		this.graphics.scale(dpr, dpr);
 
 		this.width = rect.width;

@@ -118,7 +118,13 @@ function main() {
 
 				app.redraw();
 			}
-		}
+		},
+		redoCanvas: _.debounce(() => {
+			canvas.width = document.documentElement.clientWidth;
+			canvas.height = canvas.width / 5;
+			fretboard.reconfigureCanvas();
+			globals.redraw();
+		}, 16)
 	};
 
 	Object.assign(window as any, globals);
@@ -143,6 +149,9 @@ function main() {
 		}
 	);
 	canvas.addEventListener('mouseleave', () => (app.highlight = null));
+
+	window.addEventListener('resize',            e => globals.redoCanvas());
+	window.addEventListener('orientationchange', e => globals.redoCanvas());
 	
 	document.getElementById('SaveButton').addEventListener('click', () => {
 		let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
