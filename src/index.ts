@@ -13,7 +13,6 @@ class FretboardApp {
 	constructor(fretboard: Fretboard) {
 		this._fretboard = fretboard;
 		this._debouncedRedraw = _.debounce(() => this.redraw('force'), 10, true);
-		this.redraw();
 	}
 
 	public get highlight() { return this._highlight; }
@@ -99,7 +98,7 @@ function main() {
 	let globals = {
 		redraw: () => app.redraw(),
 		setTuning: (tuning: string) => {
-			(document.getElementById('StringsInput') as HTMLInputElement).value = tuning;
+			(document.getElementById('StringsInput')   as HTMLInputElement ).value = tuning;
 			(document.getElementById('StringsPresets') as HTMLSelectElement).value = '';
 			fretboard.strings = Util.parseTuning(tuning);
 			app.redraw();
@@ -119,8 +118,8 @@ function main() {
 
 	Object.assign(window as any, globals);
 
-	globals.setTuning((document.getElementById('StringsInput') as HTMLInputElement).value);
-	globals.setTheme((document.getElementById('ThemeSelect') as HTMLSelectElement).value);
+	globals.setTuning((document.getElementById('StringsInput') as HTMLInputElement ).value);
+	globals.setTheme ((document.getElementById('ThemeSelect')  as HTMLSelectElement).value);
 
 	canvas.addEventListener('click', e => {
 		const string = fretboard.pickString(e.offsetY);
@@ -147,6 +146,8 @@ function main() {
 
 		fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
 	});
+
+	app.redraw();
 }
 
 (window as any).main = main;
