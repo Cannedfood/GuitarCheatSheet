@@ -4,6 +4,53 @@ import Fretboard from './Fretboard'
 
 import _ from 'underscore'
 
+class FretboardApp {
+	private _fretboard: Fretboard
+	private _highlight: undefined|{fret:number,string:number}
+	private _debouncedRedraw: () => void;
+
+	constructor(fretboard: Fretboard) {
+		this._fretboard = fretboard;
+		this._debouncedRedraw = _.debounce(() => this.redraw(true), 10, false);
+	}
+
+	public get highlight() { return this._highlight; }
+	public set highlight(value) { this._highlight = value; this.redraw(); }
+
+	public redraw(force: "force"|undefined = undefined) {
+		if(force) {
+			this.draw(this._fretboard);
+		}
+	}
+
+	protected draw(fretboard: Fretboard) {
+		fretboard.drawInlays()
+		fretboard.drawFrets()
+		fretboard.drawStrings()
+		if(this.highlight) {
+			fretboard.highlightFret(this.highlight.fret, this.highlight.string);
+		}
+	}
+
+	protected click(note: {fret: number, string: number, note: string}) {}
+}
+
+class CheatSheetApp extends FretboardApp {
+	constructor(fretboard: Fretboard) {
+		super(fretboard)
+	}
+
+	draw(fretboard: Fretboard) {
+		super.draw(fretboard)
+	}
+}
+
+class NoteTrainingApp extends FretboardApp {
+	draw(fretboard: Fretboard) {
+
+	}
+}
+
 function main() {
 	let canvas = document.getElementById("MainCanvas") as HTMLCanvasElement;
 	canvas.width = document.documentElement.clientWidth;
@@ -11,6 +58,13 @@ function main() {
 
 	let fretboard = new Fretboard(canvas);
 
+	let app = new CheatSheetApp(fretboard);
+
+	(window as any).redraw = () => app.redraw();
+
+	app.redraw("force")
+
+	/*
 	let highlight = null;
 
 	function parseNoteCollection(s: string) {
@@ -43,7 +97,7 @@ function main() {
 		for(let char of [...(document.getElementById("StringsInput") as HTMLInputElement).value]) {
 			if(char.trim().length == 0)
 				continue;
-			if(char == '#' || char == 'b' || /*is number*/!isNaN(+char))
+			if(char == '#' || char == 'b' || !isNaN(+char))
 				tuning[tuning.length - 1] += char;
 			else
 				tuning.push(char);
@@ -230,6 +284,7 @@ function main() {
 
 		fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
 	});
+	*/
 }
 
 (window as any).main = main;
