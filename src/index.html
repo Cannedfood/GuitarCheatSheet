@@ -10,7 +10,7 @@
 <body onload="main()">
 	<canvas id="MainCanvas"></canvas>
 	<div id="info"></div>
-	<div class="config">
+	<div id="CheatSheetConfig" class="config">
 		<div>
 			<select id="ModeSelect" onchange="redraw()" class="label">
 				<option>Chord</option>
@@ -35,7 +35,7 @@
 		</div>
 	</div>
 
-	<div class="config">
+	<div id="NoteTrainerConfig" class="config" hidden>
 		<div>
 			<label for="InputChangeInterval">Change</label>
 			<input id="InputChangeInterval" type="number" value="2000">ms
@@ -74,7 +74,17 @@
 				<option>Dark</option>
 			</select>
 		</div>
-		<button id="SaveButton">Save as PNG</button>
+		<div>
+			<button onclick="saveAsPng()">Save as PNG</button>
+		</div>
+		<div>
+			<button onclick="setAppMode('noteTrainer')">
+				Note Trainer Mode
+			</button>
+			<button onclick="setAppMode('cheatSheet')">
+				Cheat Sheet Mode
+			</button>
+		</div>
 	</div>
 </body>
 </html>

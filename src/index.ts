@@ -10,6 +10,8 @@ class FretboardApp {
 	private _highlight: undefined|{fret:number,string:number}
 	private _debouncedRedraw: () => void;
 
+	public killed = false;
+
 	constructor(fretboard: Fretboard) {
 		this._fretboard = fretboard;
 		this._debouncedRedraw = _.debounce(() => this.redraw('force'), 10, true);
@@ -119,14 +121,14 @@ class NoteTrainer extends FretboardApp {
 		// console.log(this.note)
 		this.redraw();
 
-		setTimeout(() => this.revealNote(), this.revealTime);
+		setTimeout(() => this.killed || this.revealNote(), this.revealTime);
 	}
 
 	revealNote() {
 		this.note.note = this.fretboard.getNote(this.note.string, this.note.fret);
 		this.redraw();
 
-		setTimeout(() => this.nextNote(), this.changeTime);
+		setTimeout(() => this.killed || this.nextNote(), this.changeTime);
 	}
 
 	draw(fretboard: Fretboard) {
@@ -158,14 +160,14 @@ function main() {
 	let app:FretboardApp = new CheatSheetApp(fretboard);
 
 	let globals = {
-		redraw: () => app.redraw(),
-		setTuning: (tuning: string) => {
+		redraw() { app.redraw() },
+		setTuning(tuning: string) {
 			(document.getElementById('StringsInput')   as HTMLInputElement ).value = tuning;
 			(document.getElementById('StringsPresets') as HTMLSelectElement).value = '';
 			fretboard.strings = Util.parseTuning(tuning);
 			app.redraw();
 		},
-		setTheme: (theme: string) => {
+		setTheme(theme: string) {
 			(document.getElementById('ThemeSelect') as HTMLSelectElement).value = theme;
 
 			let themeClass = `theme-${theme}`;
@@ -184,7 +186,29 @@ function main() {
 			canvas.height = canvas.width / 5;
 			fretboard.reconfigureCanvas();
 			globals.redraw();
-		}, 16)
+		}, 16),
+		setAppMode(mode: 'noteTrainer'|'cheatSheet') {
+			app.killed = true;
+
+			document.getElementById("NoteTrainerConfig").hidden = (mode != 'noteTrainer');
+			document.getElementById("CheatSheetConfig").hidden  = (mode != 'cheatSheet');
+
+			if(mode == 'noteTrainer') {
+				app = new NoteTrainer(fretboard);
+			}
+			if(mode == 'cheatSheet') {
+				app = new CheatSheetApp(fretboard);
+			}
+
+			app.redraw();
+		},
+		saveAsPng() {
+			let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
+			let type    = (document.getElementById('ModeSelect')   as HTMLSelectElement).value;
+			let name    = (document.getElementById('ChordInput')   as HTMLInputElement).value;
+	
+			fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
+		}
 	};
 
 	Object.assign(window as any, globals);
@@ -212,14 +236,6 @@ function main() {
 
 	window.addEventListener('resize',            e => globals.redoCanvas());
 	window.addEventListener('orientationchange', e => globals.redoCanvas());
-	
-	document.getElementById('SaveButton').addEventListener('click', () => {
-		let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
-		let type    = (document.getElementById('ModeSelect')   as HTMLSelectElement).value;
-		let name    = (document.getElementById('ChordInput')   as HTMLInputElement).value;
-
-		fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
-	});
 
 	app.redraw();
 }
