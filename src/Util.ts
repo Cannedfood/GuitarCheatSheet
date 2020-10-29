@@ -7,7 +7,11 @@ function parseNoteCollection(s: string) {
 
 	let root = Note.get(notes[0]);
 	for(let note of notes) {
-		intervals.push(Interval.distance(root, note));
+		let i = Interval.simplify(
+			Interval.fromSemitones(Interval.semitones(Interval.distance(root, note)))
+		);
+		if(i == '8P') i = '1P';
+		intervals.push(i);
 	}
 
 	return { notes, intervals };
