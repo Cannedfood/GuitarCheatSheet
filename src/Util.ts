@@ -47,6 +47,21 @@ function betterIntervalName(originalName: string) {
 }
 
 export
+function wholeNoteIndices(startNote: string, halfSteps: number) {
+	let result = [] as number[];
+
+	let note = startNote;
+	for (let i = 0; i < halfSteps; i++) {
+		if(!Note.get(note).acc) {
+			result.push(i);
+		}
+		note = Note.simplify(Note.transpose(note, 'm2'));
+	}
+
+	return result;
+}
+
+export
 function intervalStyle(originalName: string) {
 	return betterIntervalName(originalName);
 }

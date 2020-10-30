@@ -104,6 +104,7 @@ class NoteTrainer extends FretboardApp {
 	get changeTime() { return +(document.getElementById('InputChangeInterval') as HTMLInputElement).value }
 	get revealTime() { return +(document.getElementById('InputRevealInterval') as HTMLInputElement).value }
 	get strings()    { return (document.getElementById('InputStringSelection') as HTMLInputElement).value.split(' ').map(v => (+v-1)) }
+	get onlyWholeNotes() { return (document.getElementById('InputOnlyWholeNotes') as HTMLInputElement).checked }
 
 	constructor(fretboard: Fretboard) {
 		super(fretboard)
@@ -114,12 +115,18 @@ class NoteTrainer extends FretboardApp {
 	nextNote() {
 		const strings = this.strings;
 
-		this.note = {
-			fret: Math.floor(Math.random() * 12),
-			string: strings[Math.floor(Math.random() * strings.length)]
-		};
+		let string: number = _.sample(strings);
+		let fret: number;
+		if(this.onlyWholeNotes)
+			fret = _.sample(Util.wholeNoteIndices(this.fretboard.strings[string], 12));
+		else
+			fret = _.random(12);
+
+		this.note = { string, fret };
 		// console.log(this.note)
 		this.redraw();
+
+		console.log(this.onlyWholeNotes);
 
 		setTimeout(() => this.killed || this.revealNote(), this.revealTime);
 	}
