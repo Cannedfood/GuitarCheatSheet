@@ -8,87 +8,67 @@
 	<link rel="stylesheet" href="index.scss">
 </head>
 <body onload="main()">
-	<canvas id="MainCanvas"></canvas>
-	<div id="info"></div>
-	<div id="CheatSheetConfig" class="config">
-		<div>
-			<select id="ModeSelect" onchange="redraw()" class="label">
-				<option>Chord</option>
-				<option>Scale</option>
-				<option>Notes</option>
-			</select>
-			<input type="text" name="ChordInput" id="ChordInput" value="C major" onchange="redraw()">
-			<!-- <select id="ChordPresets" onchange="if(this.value) { document.getElementById('ChordInput').value = this.value; this.value = ''; redraw(); }">
-				<option></option>
-				<option>C major</option>
-				<option>C minor</option>
-				<option>C maj7</option>
-				<option>C min7</option>
-				<option>C dom</option>
-			</select>
-			<select id="ScalePresets">
-				<option></option>
-				<option>C major</option>
-				<option>C minor</option>
-				<option>C harmonic minor</option>
-			</select> -->
+	<div>
+		<select id="ThemeSelect" onchange="setTheme(this.value)">
+			<option value="Light">☀️ Light Mode</option>
+			<option value="Dark">🌙 Dark Mode</option>
+			<option value="Colorful">👁️ Eye Cancer</option>
+		</select>
+		<button onclick="saveAsPng()">💾 Save as PNG</button>
+	</div>
+	<div>
+		<label>Tuning</label>
+		<input
+			id="StringsInput"
+			type="text" name="StringsInput"
+			value="B1 E2 A2 D3 G3 B3 E4"
+			onchange="setTuning(this.value);">
+		<select id="StringsPresets" onchange="setTuning(this.value);">
+			<option value="">Select Tuning</option>
+			<option value="E2 A2 D3 G3 B3 E4"   > 6 String Guitar          </option>
+			<option value="B1 E2 A2 D3 G3 B3 E4"> 7 String Guitar          </option>
+			<option value="A1 E2 A2 D3 G3 B3 E4"> 7 String Guitar (Drop-A) </option>
+			<option value="E1 A1 D2 G2"         > 4 String Bass            </option>
+			<option value="B0 E1 A1 D2 G2"      > 5 String Bass            </option>
+			<option value="A0 E1 A1 D2 G2"      > 5 String Bass (Drop-A)   </option>
+		</select>
+	</div>
+	<div class="config">
+		<select id="AppModeSelect" onchange="setAppMode(this.value)">
+			<option value="cheatSheet" selected>Cheat Sheet</option>
+			<option value="noteTrainer">Note Trainer</option>
+		</select>
+		<div id="NoteTrainerConfig" class="config" hidden>
+			<div>
+				<label for="InputChangeInterval">Change</label>
+				<input id="InputChangeInterval" type="number" value="2000">ms
+			</div>
+			<!-- <div>
+				<label for="InputRevealInterval">Reveal</label>
+				<input id="InputRevealInterval" type="number" value="2000">ms
+			</div> -->
+			<div>
+				<label for="InputStringSelection">Strings</label>
+				<input id="InputStringSelection" type="text" value="1 2 3 4 5 6 7">
+			</div>
+			<div>
+				<label for="InputOnlyWholeNotes">Only Whole Notes</label>
+				<input type="checkbox" id="InputOnlyWholeNotes" checked='checked'>
+			</div>
+		</div>
+		<div id="CheatSheetConfig" class="config">
+			<div>
+				<select id="ModeSelect" onchange="redraw()" class="label">
+					<option value="chord">Chord</option>
+					<option value="scale">Scale</option>
+					<option value="notes">Notes</option>
+				</select>
+				<input type="text" name="ChordInput" id="ChordInput" value="C major" onchange="redraw()">
+			</div>
 		</div>
 	</div>
 
-	<div id="NoteTrainerConfig" class="config" hidden>
-		<div>
-			<label for="InputChangeInterval">Change</label>
-			<input id="InputChangeInterval" type="number" value="2000">ms
-		</div>
-		<div>
-			<label for="InputRevealInterval">Reveal</label>
-			<input id="InputRevealInterval" type="number" value="2000">ms
-		</div>
-		<div>
-			<label for="InputStringSelection">Strings</label>
-			<input id="InputStringSelection" type="text" value="1 2 3 4 5 6 7">
-		</div>
-		<div>
-			<label for="InputOnlyWholeNotes">Only Whole Notes</label>
-			<input type="checkbox" id="InputOnlyWholeNotes" checked='checked'>
-		</div>
-	</div>
-	<div class="config">
-		<div>
-			<label>Tuning</label>
-			<input
-				id="StringsInput"
-				type="text" name="StringsInput"
-				value="B1 E2 A2 D3 G3 B3 E4"
-				onchange="setTuning(this.value);">
-			<select id="StringsPresets" onchange="setTuning(this.value);">
-				<option value=""></option>
-				<option value="E2 A2 D3 G3 B3 E4"   > 6 String Guitar          </option>
-				<option value="B1 E2 A2 D3 G3 B3 E4"> 7 String Guitar          </option>
-				<option value="A1 E2 A2 D3 G3 B3 E4"> 7 String Guitar (Drop-A) </option>
-				<option value="E1 A1 D2 G2"         > 4 String Bass            </option>
-				<option value="B0 E1 A1 D2 G2"      > 5 String Bass            </option>
-				<option value="A0 E1 A1 D2 G2"      > 5 String Bass (Drop-A)   </option>
-			</select>
-		</div>
-		<div>
-			<label>Theme</label>
-			<select id="ThemeSelect" onchange="setTheme(this.value)">
-				<option>Light</option>
-				<option>Dark</option>
-			</select>
-		</div>
-		<div>
-			<button onclick="saveAsPng()">Save as PNG</button>
-		</div>
-		<div>
-			<button onclick="setAppMode('noteTrainer')">
-				Note Trainer Mode
-			</button>
-			<button onclick="setAppMode('cheatSheet')">
-				Cheat Sheet Mode
-			</button>
-		</div>
-	</div>
+	<canvas id="MainCanvas"></canvas>
+	<div id="info"></div>
 </body>
 </html>

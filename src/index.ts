@@ -49,7 +49,7 @@ class FretboardApp {
 }
 
 class CheatSheetApp extends FretboardApp {
-	get mode() { return (document.getElementById("ModeSelect") as HTMLSelectElement).value.toLowerCase() as "chord"|"scale"|"notes" }
+	get mode() { return (document.getElementById("ModeSelect") as HTMLSelectElement).value as "chord"|"scale"|"notes" }
 	get noteCollectionName() { return (document.getElementById("ChordInput") as HTMLInputElement).value }
 	get noteCollection() {
 		const mode = this.mode;
@@ -59,7 +59,7 @@ class CheatSheetApp extends FretboardApp {
 			(mode == "scale")? Scale.get(noteCollectionName) :
 			(mode == "notes")? Util.parseNoteCollection(noteCollectionName) :
 			null
-		);
+		)
 	}
 
 	constructor(fretboard: Fretboard) {
@@ -102,7 +102,7 @@ class NoteTrainer extends FretboardApp {
 	note: FretboardPosition|undefined;
 
 	get changeTime() { return +(document.getElementById('InputChangeInterval') as HTMLInputElement).value }
-	get revealTime() { return +(document.getElementById('InputRevealInterval') as HTMLInputElement).value }
+	get revealTime() { return this.changeTime }
 	get strings()    { return (document.getElementById('InputStringSelection') as HTMLInputElement).value.split(' ').map(v => (+v-1)) }
 	get onlyWholeNotes() { return (document.getElementById('InputOnlyWholeNotes') as HTMLInputElement).checked }
 
@@ -123,10 +123,7 @@ class NoteTrainer extends FretboardApp {
 			fret = _.random(12);
 
 		this.note = { string, fret };
-		// console.log(this.note)
 		this.redraw();
-
-		console.log(this.onlyWholeNotes);
 
 		setTimeout(() => this.killed || this.revealNote(), this.revealTime);
 	}
@@ -151,9 +148,13 @@ class NoteTrainer extends FretboardApp {
 	}
 
 	public hover(position: FretboardPosition) {
-		if(!position) return;
-		const note = this.fretboard.getNote(position.string, position.fret);
-		document.getElementById('info').innerText = note;
+		if(!position) {
+			document.getElementById('info').innerText = "";
+		}
+		else {
+			const note = this.fretboard.getNote(position.string, position.fret);
+			document.getElementById('info').innerText = note;
+		}
 	}
 }
 
