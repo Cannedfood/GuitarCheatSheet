@@ -165,7 +165,7 @@ function main() {
 
 	let fretboard = new Fretboard(canvas);
 	fretboard.numFrets = 15;
-	let app:FretboardApp = new CheatSheetApp(fretboard);
+	let app:FretboardApp|null = new CheatSheetApp(fretboard);
 
 	let globals = {
 		redraw() { app.redraw() },
@@ -196,7 +196,9 @@ function main() {
 			globals.redraw();
 		}, 16),
 		setAppMode(mode: 'noteTrainer'|'cheatSheet') {
-			app.killed = true;
+			(document.getElementById('AppModeSelect') as HTMLSelectElement).value = mode;
+
+			if(app) app.killed = true;
 
 			document.getElementById("NoteTrainerConfig").hidden = (mode != 'noteTrainer');
 			document.getElementById("CheatSheetConfig").hidden  = (mode != 'cheatSheet');
@@ -214,7 +216,7 @@ function main() {
 			let strings = (document.getElementById('StringsInput') as HTMLInputElement).value;
 			let type    = (document.getElementById('ModeSelect')   as HTMLSelectElement).value;
 			let name    = (document.getElementById('ChordInput')   as HTMLInputElement).value;
-	
+
 			fretboard.saveAsImage(`${type}-${name.replace(' ', '')}-${strings}.png`);
 		}
 	};
