@@ -1,0 +1,9 @@
+{
+	"name": "Guitar Cheat Sheet",
+	"short_name": "Guitar",
+	"lang": "en-US",
+	"start_url": "/",
+	"display": "fullscreen",
+	"orientation": "portrait",
+	"theme_color": "#330033"
+}

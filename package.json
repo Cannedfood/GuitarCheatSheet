@@ -4,21 +4,23 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "parcel src/index.html",
+    "serve": "parcel src/index.html",
     "build": "parcel build src/index.html && cp dist/index.html .",
     "commit-build": "npm run build && git add index.html && git commit -m 'Built index.html'"
   },
   "author": "Benno Straub",
   "license": "ISC",
-  "dependencies": {
-    "@tonaljs/tonal": "^4.2.1",
-    "parcel-bundler": "^1.12.4",
-    "parcel-plugin-inliner": "^1.0.14",
-    "sass": "^1.26.11",
-    "typescript": "^3.9.7",
-    "underscore": "^1.11.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@types/underscore": "^1.10.23"
+    "@tonaljs/tonal": "^4.6.0",
+    "bootstrap": "^4.5.3",
+    "underscore": "^1.12.0",
+    "vue": "^2.6.12",
+    "vue-hot-reload-api": "^2.3.4",
+    "@vue/component-compiler-utils": "^3.2.0",
+    "parcel": "^1.12.4",
+    "parcel-plugin-inliner": "^1.0.14",
+    "pug": "^3.0.0",
+    "vue-template-compiler": "^2.6.12"
   }
 }
