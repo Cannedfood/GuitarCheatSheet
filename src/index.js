@@ -3,7 +3,7 @@ if('serviceWorker' in navigator) {
 }
 
 import Vue from 'vue'
-import App from './components/App.vue'
+import App from './ui/App.vue'
 
 let app = new Vue(App)
 app.$mount("#app")

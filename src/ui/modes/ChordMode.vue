@@ -5,11 +5,11 @@
 </template>
 
 <script>
-import * as SaveState from '../util/SaveState'
-import * as Util from '../util/Util'
+import * as SaveState from '../../util/SaveState'
+import * as Util from '../../util/Util'
 import { Chord } from '@tonaljs/tonal'
 
-import PresetSelector from './PresetSelector'
+import PresetSelector from '../components/PresetSelector'
 
 export default {
 	components: { PresetSelector },

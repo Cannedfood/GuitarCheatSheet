@@ -1,5 +1,5 @@
 <template lang="pug">
-.preset-selector(v-on:click.stop="toggle()" v-bind:class="{clicked,open}") Presets
+.preset-selector.btn.btn-secondary(v-on:click.stop="toggle()" v-bind:class="{clicked,open}") Presets
 	.preset-selection
 		.preset-group(v-for="group of groups")
 			b {{group.name}}
@@ -71,12 +71,7 @@ export default {
 
 <style>
 .preset-selector {
-	display: inline-block;
-
-	padding: .3em;
-	border-radius: .3em;
-	border: 1px solid black;
-	background: lightgray;
+	cursor: default;
 }
 .preset-selection {
 	position: absolute;
@@ -102,7 +97,7 @@ export default {
 	cursor: pointer;
 }
 .preset:hover {
-	background: lightgray;
+	background: rgba(255, 255, 255, 0.25);
 }
 
 /* Show/Hide */

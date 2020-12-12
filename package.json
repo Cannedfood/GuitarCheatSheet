@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "parcel src/index.html",
     "build": "parcel build src/index.html && cp dist/index.html .",
+    "clean": "rm -R dist/ .cache/",
     "commit-build": "npm run build && git add index.html && git commit -m 'Built index.html'"
   },
   "author": "Benno Straub",
