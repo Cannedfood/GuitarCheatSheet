@@ -32,12 +32,13 @@ export default {
 		presets() {
 			return [
 				{ group: "Diatonic", name: "C Lydian" },
-				{ group: "Diatonic", name: "C Ionian (major)" },
+				{ group: "Diatonic", name: "C Major (Ionian)" },
 				{ group: "Diatonic", name: "C Mixolydian" },
 				{ group: "Diatonic", name: "C Dorian" },
-				{ group: "Diatonic", name: "C Aeolian (minor)" },
+				{ group: "Diatonic", name: "C Minor (Aeolian)" },
 				{ group: "Diatonic", name: "C Phrygian" },
 				{ group: "Diatonic", name: "C Locrian" },
+
 				{ group: "Harmonic", name: "C Harmonic Minor" },
 				{ group: "Harmonic", name: "C Locrian #6" },
 				{ group: "Harmonic", name: "C Ionian #5" },
@@ -45,6 +46,7 @@ export default {
 				{ group: "Harmonic", name: "C Phrygian Dominant" },
 				{ group: "Harmonic", name: "C Lydian #2" },
 				{ group: "Harmonic", name: "C Superlocrian" },
+
 				{ group: "Melodic",  name: "C Melodic Minor" },
 				{ group: "Melodic",  name: "C Dorian b2/Phrygian #6" },
 				{ group: "Melodic",  name: "C Lydian augmented" },
@@ -53,7 +55,11 @@ export default {
 				{ group: "Melodic",  name: "C Aeolian b5/Locrian #2" },
 				{ group: "Melodic",  name: "C Altered/Superlocrian" },
 
-				{ group: "Pentatonic", name: "C Pentatonic", value: "C pentatonic" }
+				{ group: "Pentatonic", name: "C Major Pentatonic (Mode I)", value: "C major pentatonic" },
+				{ group: "Pentatonic", name: "C Egyptian/Dorian Pentatonic (Mode I and V)", value: "C egyptian" },
+				{ group: "Pentatonic", name: "C Minor Pentatonic", value: "C minor pentatonic" },
+				{ group: "Pentatonic", name: "C Ritusen", value: "C ritusen" },
+				// TODO: Mode III (minor without 2 and 5)
 			].map(v => ({
 				group: v.group,
 				name: v.name,

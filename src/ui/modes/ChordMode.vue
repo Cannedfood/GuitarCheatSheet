@@ -32,10 +32,12 @@ export default {
 				{ group: "Triads", name: "C Minor",      value: "C minor" },
 				{ group: "Triads", name: "C Diminished", value: "C dim" },
 				{ group: "Triads", name: "C Augmented",  value: "C aug" },
-				{ group: "Triads", name: "C Quartal/Sus4/Sus2",  value: "C quartal" },
+				{ group: "Triads", name: "C Quartal",    value: "C quartal" },
+				{ group: "Triads", name: "C Sus2",       value: "C sus2" },
+				{ group: "Triads", name: "C Sus4",       value: "C sus4" },
 
 				{ group: "Seventh", name: "C Major 7",    value: "Cmaj7" },
-				{ group: "Seventh", name: "C Minor 7",    value: "Cmaj7" },
+				{ group: "Seventh", name: "C Minor 7",    value: "Cm7" },
 				{ group: "Seventh", name: "C Dominant 7", value: "Cdom" },
 				{ group: "Seventh", name: "C Minor maj7", value: "CmMaj7" },
 			];
