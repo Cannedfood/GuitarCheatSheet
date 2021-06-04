@@ -1,0 +1,49 @@
+body {
+	margin: 0;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+:not(:fullscreen) .if-fullscreen { display: none; }
+:fullscreen .not-fullscreen { display: none; }
+
+.big {
+	font-size: 1.3em;
+}
+.b {
+	font-weight: bold;
+}
+.serif {
+	font-family: Didot, serif;
+}
+
+.row {
+	width: 100%;
+	display: flex;
+	flex-flow: row;
+}
+
+label {
+	margin-right: 1em;
+}
+
+textarea:focus, input:focus{
+	outline: none;
+}
+
+input {
+	font: inherit;
+	font-size: .9em;
+	border: none;
+	border-bottom: 1px solid black;
+
+	&:focus {
+		border-bottom: 1px solid red;
+		box-shadow: 0 0 .5em #BBB;
+		z-index: 1;
+	}
+}
+
+@for $i from 1 through 12 {
+	$width: 4em * $i;
+	.w-#{$i} { display: inline-block; width: $width; }
+}
