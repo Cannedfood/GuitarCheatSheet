@@ -15,7 +15,7 @@ function parseTuning(text) {
 }
 
 export
-function intervalLongName(originalName) {
+function intervalLongName(originalName: string) {
 	const intervalNameMapping = {
 		'1P': 'root',
 		'2m': 'minor-second', '2M': 'major-second',
@@ -30,7 +30,7 @@ function intervalLongName(originalName) {
 }
 
 export
-function intervalShortName(originalName) {
+function intervalShortName(originalName: string) {
 	const intervalNameMapping = {
 		'1P': 'R',
 		'2m': '2', '2M': '2',
@@ -45,20 +45,22 @@ function intervalShortName(originalName) {
 }
 
 export
-function toHighlights(noteCollection) {
-	if(!noteCollection || !noteCollection.notes) return [];
-
-	let intervals = noteCollection;
-
-	if(intervals == null) {
-		intervals = noteCollection.notes.map(n => Interval.distance(noteCollection.notes[0], n));
+function labelNotesWithDegrees(noteCollection: { notes: string[] }) {
+	const colors = {
+		'R': "#F22",
+		'4': "#353",
+		'5': "#338",
+		'7': "#808",
 	}
 
+	const intervals = noteCollection.notes.map(n => Interval.distance(noteCollection.notes[0], n));
+
 	return noteCollection.notes.map((note, index) => {
+		let name = intervalShortName(intervals[index]);
 		return {
-			note:  note,
-			class: intervalLongName(noteCollection.intervals[index]),
-			text:  intervalShortName(noteCollection.intervals[index])
+			note: note,
+			text: name,
+			color: colors[name] || '#222'
 		}
 	});
 }

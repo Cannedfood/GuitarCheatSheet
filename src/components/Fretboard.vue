@@ -14,6 +14,7 @@ svg(:viewBox="`0 0 ${width} ${height}`")
 	text(v-for="n in notes"
 		:x="n.x" :y="n.y"
 		:font-size="`${n.fontSize}`"
+		:fill="n.textColor"
 		text-anchor="middle"
 		dominant-baseline="central"
 	) {{n.text}}
@@ -25,7 +26,7 @@ import { findNoteOnFretboard } from './FretboardNotes'
 import { generate } from '../util/Util'
 import { parseTuning } from '../util/MusicUtil'
 
-type Note = string | { note: string }
+type Note = string | { note: string, color?: string, text?: string }
 
 export default defineComponent({
 	props: {
@@ -63,7 +64,10 @@ export default defineComponent({
 			let max = fretboardPos(props.maxFret);
 			let fac = max - min;
 			let x = (fretboardPos(fret) - min) / fac;
-			return props.width*x;
+
+			let leftPadding = props.minFret <= 0? stringHeight.value*.4 : 0;
+
+			return x*(props.width - leftPadding) + leftPadding;
 		}
 		function frettingPosition(fret: number) {
 			if(fret <= 0)
@@ -112,7 +116,8 @@ export default defineComponent({
 					text,
 					fontSize: stringHeight.value * .4 / Math.max(1, text.length - 2),
 					fill: color,
-					stroke: "black",
+					stroke: 'black',
+					textColor: 'white',
 					r: stringHeight.value * .4,
 					x: frettingPosition(fret),
 					y: stringPosition(string),
@@ -122,7 +127,10 @@ export default defineComponent({
 			for(let n of props.notes) {
 				let name = typeof n == 'string'? n : n.note;
 				for(let position of findNoteOnFretboard(tuning.value, props.minFret, props.maxFret, name)) {
-					note(position.fret, position.string, "red", position.note);
+					if(typeof n == 'string')
+						note(position.fret, position.string, "red", position.note);
+					else
+						note(position.fret, position.string, n.color || "red", n.text || position.note);
 				}
 			}
 

@@ -16,6 +16,13 @@ body {
 	font-family: Didot, serif;
 }
 
+.tiny {
+	font-size: .5em;
+}
+.secondary {
+	color: #888;
+}
+
 .row {
 	width: 100%;
 	display: flex;
@@ -46,4 +53,11 @@ input {
 @for $i from 1 through 12 {
 	$width: 4em * $i;
 	.w-#{$i} { display: inline-block; width: $width; }
+}
+
+@for $i from 1 through 4 {
+	$width: .5em * $i;
+	.mx-#{$i} { margin-left: $width; margin-right: $width; }
+	// .ml-#{$i} { margin-left: $width; }
+	// .mr-#{$i} { margin-right: $width; }
 }

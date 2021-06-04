@@ -17,7 +17,7 @@ export const scales = [
 	{ category: "Diatonic", name: "C Phrygian" },
 	{ category: "Diatonic", name: "C Locrian" },
 	{ category: "Harmonic", name: "C Harmonic Minor" },
-	{ category: "Harmonic", name: "C Locrian #6" },
+	{ category: "Harmonic", name: "C Locrian #6", value: "C Locrian 6" },
 	{ category: "Harmonic", name: "C Ionian #5" },
 	{ category: "Harmonic", name: "C Dorian #4" },
 	{ category: "Harmonic", name: "C Phrygian Dominant" },
