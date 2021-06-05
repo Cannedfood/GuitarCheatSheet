@@ -45,7 +45,9 @@ function intervalShortName(originalName: string) {
 }
 
 export
-function labelNotesWithDegrees(noteCollection: { notes: string[] }) {
+function labelNotesWithDegrees(noteCollection?: { notes: string[] }) {
+	if(!noteCollection) return [];
+
 	const colors = {
 		'R': "#F22",
 		'4': "#353",

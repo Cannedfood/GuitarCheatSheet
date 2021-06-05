@@ -1,5 +1,12 @@
 <template lang="pug">
-svg(:viewBox="`0 0 ${width} ${height}`")
+svg(ref="fretboard"
+	:viewBox="`0 0 ${width} ${height}`"
+	@mousemove="mousemove($event)"
+	@mouseleave="mouseleave($event)"
+	@mouseup="mouseup($event)"
+	@mousedown="mousedown($event)"
+	style="user-select: none;"
+)
 	//- Draw fretboard
 	rect(width="100%" height="100%" :fill="colors.bg")
 	path(:d="strings" :stroke="colors.string" vector-effect="non-scaling-stroke")
@@ -7,26 +14,34 @@ svg(:viewBox="`0 0 ${width} ${height}`")
 	circle(v-for="c in fretMarkers" :cx="c.cx" :cy="c.cy" :r="c.r")
 
 	//- Notes and stuff
-	circle(v-for="n in notes"
-		:cx="n.x" :cy="n.y" :r="n.r"
-		:stroke="n.stroke" :fill="n.fill"
-		vector-effect="non-scaling-stroke")
-	text(v-for="n in notes"
-		:x="n.x" :y="n.y"
-		:font-size="`${n.fontSize}`"
-		:fill="n.textColor"
-		text-anchor="middle"
-		dominant-baseline="central"
-	) {{n.text}}
+	g(v-for="n in notes")
+		circle(
+			:cx="n.x" :cy="n.y" :r="n.r"
+			:stroke="n.stroke" :fill="n.fill"
+			vector-effect="non-scaling-stroke")
+		text(
+			:x="n.x" :y="n.y"
+			:font-size="`${n.fontSize}`"
+			:fill="n.textColor"
+			text-anchor="middle"
+			dominant-baseline="central"
+		) {{n.text}}
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, reactive } from "vue";
+import { computed, defineComponent, defineEmit, PropType, reactive, ref } from "vue";
 import { findNoteOnFretboard } from './FretboardNotes'
 import { generate } from '../util/Util'
 import { parseTuning } from '../util/MusicUtil'
+import { Note } from '@tonaljs/tonal'
 
-type Note = string | { note: string, color?: string, text?: string }
+type Note = string | {
+	note: string,
+	fret?: number,
+	string?: number,
+	color?: string,
+	text?: string,
+}
 
 export default defineComponent({
 	props: {
@@ -37,7 +52,7 @@ export default defineComponent({
 		width:   { default: 100, type: Number },
 		height:  { default: 24,  type: Number},
 	},
-	emits: [ 'clicked', 'hovered' ],
+	emits: [ 'clicked', 'hovered', 'drawn' ],
 	setup(props, { emit }) {
 		const colors = reactive({
 			bg: "#333",
@@ -46,7 +61,7 @@ export default defineComponent({
 			fretmarker: "#000"
 		});
 
-		const tuning = computed(() => {
+		const tuning = computed<string[]>(() => {
 			if(typeof(props.tuning) == 'string')
 				return parseTuning(props.tuning);
 			return tuning;
@@ -54,19 +69,30 @@ export default defineComponent({
 
 		const stringHeight = computed(() => props.height / tuning.value.length);
 		function stringPosition(str: number) { return props.height - stringHeight.value * (str + .5); }
+		function positionToString(y: number) { return Math.floor((props.height - y) / stringHeight.value); }
 
+		function log(base: number, value: number) {
+			return Math.log2(value) / Math.log2(base);
+		}
+
+		let linear = false;
+		function fretboardPos(fret: number) { //< Computes the position on the fretboard (with scale length = 1)
+			if(linear) return fret;
+			const f = 0.94387431268; // Scaling factor from fret to fret, 2^(-1/12)
+			return 1 - Math.pow(f, fret);
+		}
+		function invFretboardPos(x: number) {
+			if(linear) return x;
+			const f = 0.94387431268;
+			return log(f, 1 - x);
+		}
 		function fretPosition(fret: number) {
-			function fretboardPos(fret: number) { //< Computes the position on the fretboard (with scale length = 1)
-				const f = 0.94387431268; // Scaling factor from fret to fret, 2^(-1/12)
-				return 1 - Math.pow(f, fret);
-			}
 			let min = fretboardPos(props.minFret);
 			let max = fretboardPos(props.maxFret);
 			let fac = max - min;
-			let x = (fretboardPos(fret) - min) / fac;
-
 			let leftPadding = props.minFret <= 0? stringHeight.value*.4 : 0;
 
+			let x = (fretboardPos(fret) - min) / fac;
 			return x*(props.width - leftPadding) + leftPadding;
 		}
 		function frettingPosition(fret: number) {
@@ -74,6 +100,21 @@ export default defineComponent({
 				return fretPosition(fret);
 			else
 				return (fretPosition(fret - 1) + fretPosition(fret)) * .5;
+		}
+		function positionToFret(x: number) {
+			let min = fretboardPos(props.minFret);
+			let max = fretboardPos(props.maxFret);
+			let fac = max - min;
+			let leftPadding = props.minFret <= 0? stringHeight.value*.4 : 0;
+
+			let x1 = (x - leftPadding) / (props.width - leftPadding);
+			let x2 = x1 * fac + min;
+
+			let fret = invFretboardPos(x2);
+			if(fret < .3)
+				return 0;
+			else
+				return Math.ceil(fret);
 		}
 
 		const strings = computed(() =>
@@ -125,19 +166,67 @@ export default defineComponent({
 			}
 
 			for(let n of props.notes) {
-				let name = typeof n == 'string'? n : n.note;
-				for(let position of findNoteOnFretboard(tuning.value, props.minFret, props.maxFret, name)) {
-					if(typeof n == 'string')
-						note(position.fret, position.string, "red", position.note);
-					else
-						note(position.fret, position.string, n.color || "red", n.text || position.note);
+				if(!n) continue;
+
+				if(typeof n == 'object' && n.fret !== undefined && n.string !== undefined) {
+					note(n.fret, n.string, n.color || "red", n.text);
 				}
+				else {
+					let name = typeof n == 'string'? n : n.note;
+					for(let position of findNoteOnFretboard(tuning.value, props.minFret, props.maxFret, name)) {
+						if(typeof n == 'string')
+							note(position.fret, position.string, "red", position.note);
+						else
+							note(position.fret, position.string, n.color || "red", n.text || position.note);
+					}
+				}
+
 			}
 
 			return result;
 		});
 
-		return { strings, frets, fretMarkers, colors, notes };
+		let fretboard = ref<SVGElement>(null);
+		function position(e: MouseEvent) {
+			let s = fretboard.value.getBoundingClientRect();
+			let x = (e.pageX - s.x) / s.width * props.width;
+			let y = (e.pageY - s.y) / s.height * props.height;
+			let fret   = positionToFret(x);
+			let string = positionToString(y);
+
+			let note = Note.fromMidiSharps(Note.midi(tuning.value[string]) + fret)
+
+			return { x, y, fret, string, note };
+		}
+
+		let lastDrawn = null;
+		function mousemove(e: MouseEvent) {
+			let p = position(e);
+			emit('hovered', p);
+			if(lastDrawn && (p.fret !== lastDrawn.fret || p.string != lastDrawn.string)) {
+				emit("drawn", p);
+				lastDrawn = p;
+			}
+		}
+		function mousedown(e: MouseEvent) {
+			let p = position(e);
+			emit('clicked', p);
+
+			lastDrawn = p;
+			emit('drawn', p);
+		}
+		function mouseup(e: MouseEvent) {
+			lastDrawn = null;
+		}
+		function mouseleave(e: MouseEvent) {
+			emit('hovered', null);
+			lastDrawn = null;
+		}
+
+		return {
+			strings, frets, fretMarkers, colors, notes,
+			mouseup, mousedown, mousemove, mouseleave, fretboard
+		};
 	}
 })
 </script>
