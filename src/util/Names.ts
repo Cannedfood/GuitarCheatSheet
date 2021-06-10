@@ -1,20 +1,6 @@
 import { Interval } from '@tonaljs/tonal'
 
 export
-function parseTuning(text) {
-	let tuning = [];
-	for(let char of [...text]) {
-		if(char.trim().length == 0)
-			continue;
-		if(char == '#' || char == 'b' || !isNaN(+char))
-			tuning[tuning.length - 1] += char;
-		else
-			tuning.push(char);
-	}
-	return tuning;
-}
-
-export
 function intervalLongName(originalName: string) {
 	const intervalNameMapping = {
 		'1P': 'root',

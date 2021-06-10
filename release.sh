@@ -14,4 +14,5 @@ npx inliner "http://localhost:${PORT}" > index.html
 
 for x in $(jobs -p); do kill $x; done;
 
+wait
 clear

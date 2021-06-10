@@ -1,5 +1,5 @@
 <template lang="pug">
-.settings(v-if="state.mode == 'settings'")
+.settings
 	.row.big
 		label.w-2 End Fret
 		input(type="number" min="0" max="24" default="12" v-model="state.endFret")
@@ -15,7 +15,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from "vue";
-import { tunings } from '../util/Libraries'
+import { tunings } from '../util/Presets'
 
 export default defineComponent({
 	setup() { return { state: inject('state'), tunings } }

@@ -1,32 +1,19 @@
 <template lang="pug">
 nav
 	h1
-		a(
-			v-for="m in ['scales', 'arpeggios', 'notes', 'settings']"
-			:class="{active: state.mode == m }"
-			@click="state.mode = m"
-		) {{m.charAt(0).toUpperCase() + m.slice(1)}}
+		router-link(v-for="m in ['scales', 'arpeggios', 'notes', 'practice', 'settings']" :to="`/${m}`") {{m.charAt(0).toUpperCase() + m.slice(1)}}
 	.rest
 		a.not-fullscreen(@click="enterFullscreen()") Fullscreen
 		a.if-fullscreen(@click="exitFullscreen()") Exit Fullscreen
 
-arpeggios(v-if="state.mode == 'arpeggios'")
-scales(v-if="state.mode == 'scales'")
-notes(v-if="state.mode == 'notes'")
-settings(v-if="state.mode == 'settings'")
+router-view
 
 </template>
 
 <script lang="ts">
 import { defineComponent, inject, reactive } from "vue";
 
-import Settings  from './views/Settings.vue'
-import Notes     from './views/Notes.vue'
-import Arpeggios from './views/Arpeggios.vue'
-import Scales    from './views/Scales.vue'
-
 export default defineComponent({
-	components: { Settings, Notes, Arpeggios, Scales },
 	setup(props) {
 		let state = inject<any>("state");
 		return reactive({
@@ -49,7 +36,9 @@ nav {
 	align-items: stretch;
 
 	a {
+		text-decoration: none;
 		cursor: pointer;
+		color: black;
 		&:hover {
 			background: #0002;
 		}
@@ -65,7 +54,7 @@ nav {
 
 			margin: 0;
 			padding: .7em;
-			&:not(.active) {
+			&:not(.router-link-active) {
 				color: #AAA;
 			}
 

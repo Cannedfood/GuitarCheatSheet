@@ -1,12 +1,12 @@
 <template lang="pug">
 .library
-	.category(v-for="cat of categories")
+	.category(v-for="cat of categories" :key="cat.name")
 			h5
 				label(:for="cat.name") {{cat.name}}
 				select(hidden :id="cat.name")
 					option(v-for="e in cat.entries" :value="e") {{e.name}}
 			a.entry(
-				v-for="e of cat.entries"
+				v-for="e of cat.entries" :key="e.name"
 				@click.stop="select(e)"
 				:class="{ selected: isSelected(e) }"
 			) {{e.name}}

@@ -1,5 +1,6 @@
 import { reactive, watch } from "vue";
 import deepmerge from 'deepmerge'
+import { debounce } from "./Util";
 
 interface PersistentStateOptions {
 	debounceMs?: number;
@@ -47,11 +48,3 @@ function persistentState<T extends Object>(name: string, stateDefaults: T, optio
 	return state;
 }
 
-function debounce<T extends Function>(cb: T, wait = 20) {
-    let h: NodeJS.Timeout;
-    let callable = (...args: any) => {
-        clearTimeout(h);
-        h = setTimeout(() => cb(...args), wait);
-    };
-    return <T>(<any>callable);
-}

@@ -1,9 +1,24 @@
 import { Note } from '@tonaljs/tonal'
+import { log } from '../util/Util';
 
 interface FretNote {
 	note: string;
 	fret: number;
 	string: number;
+}
+
+export
+function parseTuning(text: string) {
+	let tuning = [];
+	for(let char of [...text]) {
+		if(char.trim().length == 0)
+			continue;
+		if(char == '#' || char == 'b' || !isNaN(+char))
+			tuning[tuning.length - 1] += char;
+		else
+			tuning.push(char);
+	}
+	return tuning;
 }
 
 export function findNoteOnFretboard(tuning: string[], minFret: number, maxFret: number, note: string): FretNote[] {
@@ -48,4 +63,22 @@ export function findNoteOnFretboard(tuning: string[], minFret: number, maxFret: 
 	}
 
 	return result;
+}
+
+export
+function noteAt(tuning: string[], string: number, fret: number) {
+	return Note.fromMidiSharps(Note.midi(tuning[string]) + fret);
+}
+
+const f = Math.pow(2, -1/12); // Scaling factor from fret to fret
+
+export
+function fretboardPos(fret: number, linear = false) { //< Computes the position on the fretboard (with scale length = 1)
+	if(linear) return fret;
+	return 1 - Math.pow(f, fret);
+}
+export
+function invFretboardPos(x: number, linear = false) {
+	if(linear) return x;
+	return log(f, 1 - x);
 }

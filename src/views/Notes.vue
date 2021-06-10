@@ -11,6 +11,12 @@ fretboard(
 a.flat-button(@click="selected = []") Clear
 //- a.flat-button(@click="state.notes.oneNotePerString = !state.notes.oneNotePerString") One note per string: {{state.notes.oneNotePerString? 'Yes':'No'}}
 span.big(v-if="looksLikeChordsHtml" v-html="looksLikeChordsHtml")
+div
+	select(v-model="state.notes.practicedString")
+		option(v-for="idx in tuning.length" :value="idx") {{tuning[idx]}}
+	input.right.w-1(v-model="state.notes.noteDelay")
+	span sec
+	a.flat-button Start
 </template>
 
 <style lang="scss">
@@ -34,23 +40,11 @@ span.big(v-if="looksLikeChordsHtml" v-html="looksLikeChordsHtml")
 </style>
 
 <script lang="ts">
-import { computed, defineComponent, inject, reactive } from "vue";
+import { computed, defineComponent, inject, onUnmounted, reactive, ref } from "vue";
 import { detect } from '@tonaljs/chord-detect'
 import { Note } from '@tonaljs/tonal'
-
-function remove<T>(array: T[], filter: (v: T) => boolean) {
-	let n = 0;
-	for(let i = 0; i < array.length; i++) {
-		if(filter(array[i])) {
-			array.splice(i, 1);
-			n++;
-			i--;
-		}
-	}
-	return n;
-}
-
-function uniq<T>(array: T[]): T[] { return [...new Set(array)]; }
+import { parseTuning } from '../components/FretboardNotes'
+import { remove, uniq } from "../util/Util";
 
 function oxfordCommaOr(array: string[]) {
 	if(array.length == 1)
@@ -70,6 +64,7 @@ function oxfordCommaOr(array: string[]) {
 export default defineComponent({
 	setup(props) {
 		let state = inject<any>('state');
+
 		let data = reactive({
 			state,
 			hovered: null,
@@ -86,21 +81,17 @@ export default defineComponent({
 				let result = data.selected.map(n => ({
 					fret: n.fret,
 					string: n.string,
-					text: n.note,
+					// text: n.note,
 					color: '#250'
 				}));
 
 				if(data.hovered) {
-					// result.push({
-					// 	note: Note.pitchClass(data.hovered.note),
-					// 	color: "#68D2",
-					// 	text: ""
-					// })
 					result.push({
 						fret: data.hovered.fret,
 						string: data.hovered.string,
 						text: data.hovered.note,
-					})
+						color: data.selected.filter(n => n.string == data.hovered.string && n.fret == data.hovered.fret).length? '#BB0' : '#F00',
+					});
 				}
 				return result;
 			}),
@@ -110,7 +101,8 @@ export default defineComponent({
 				let chords = detect(uniq(pitches)).map(c => `<span class="chordname">${c}</span>`);
 				if(chords.length == 0) return;
 				return `This looks like a ${oxfordCommaOr(chords)} chord`;
-			})
+			}),
+			tuning: computed(() => parseTuning(state.tuning)),
 		});
 		return data;
 	}

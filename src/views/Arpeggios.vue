@@ -17,9 +17,9 @@ library(:entries="chords" v-model="state.arpeggio")
 <script lang="ts">
 import { computed, defineComponent, inject, reactive } from "vue";
 import { Chord, ChordDictionary } from '@tonaljs/tonal'
-import { labelNotesWithDegrees } from '../util/MusicUtil'
+import { labelNotesWithDegrees } from '../util/Names'
 import fuzzyMatch from '../util/FuzzyMatch'
-import { chords } from '../util/Libraries'
+import { chords } from '../util/Presets'
 
 export default defineComponent({
 	setup(props) {

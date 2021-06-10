@@ -18,8 +18,8 @@ library(:entries="scales" v-model="state.scale")
 import { Scale } from "@tonaljs/tonal";
 import { computed, defineComponent, inject, reactive } from "vue";
 import fuzzyMatch from "../util/FuzzyMatch";
-import { labelNotesWithDegrees } from "../util/MusicUtil";
-import { scales } from '../util/Libraries'
+import { labelNotesWithDegrees } from "../util/Names";
+import { scales } from '../util/Presets'
 
 export default defineComponent({
 	setup() {
