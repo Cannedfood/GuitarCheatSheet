@@ -20,16 +20,32 @@ import { Chord, ChordDictionary } from '@tonaljs/tonal'
 import { labelNotesWithDegrees } from '../util/Names'
 import fuzzyMatch from '../util/FuzzyMatch'
 import { chords } from '../util/Presets'
+import { flatten, titleCase, uniq } from "../util/Util";
+
+let chordNames = uniq(flatten(
+	ChordDictionary.names().map(name => [name, ...ChordDictionary.get(name).aliases]))
+);
 
 export default defineComponent({
 	setup(props) {
 		let state = inject<any>('state');
 		let data = reactive({
 			state,
-			notes: computed(() => labelNotesWithDegrees(Chord.get(state.arpeggio.trim().toLowerCase()))),
+			notes: computed(() => labelNotesWithDegrees(
+				Chord.get(state.arpeggio.trim().toLowerCase()) ||
+				Chord.get(state.arpeggio.trim())
+			)),
 			didYouMean: computed(() => {
-				if(data.notes.length != 0) return [];
-				return fuzzyMatch(ChordDictionary.names(), state.arpeggio);
+				if(data.notes.length > 0) return [];
+
+				let [success, chroma, lookUp] = state.arpeggio.match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
+				if(!success) return [];
+
+				return fuzzyMatch(chordNames, lookUp, 5).map(result => titleCase(`${chroma} ${result}`))
+				// console.log(ChordDictionary.names());
+
+				// return fuzzyMatch(ChordDictionary.names(), state.arpeggio)
+				// 	.map(n => titleCase(`${chroma} ${n}`));
 			}),
 			chords
 		});

@@ -30,11 +30,10 @@ export const scales = [
 	{ category: "Melodic",  name: "C Mixolydian b6" },
 	{ category: "Melodic",  name: "C Aeolian b5/Locrian #2" },
 	{ category: "Melodic",  name: "C Altered/Superlocrian" },
-	{ category: "Pentatonic", name: "C Major Pentatonic (Mode I)", value: "C Major Pentatonic" },
-	{ category: "Pentatonic", name: "C Egyptian/Dorian Pentatonic (Mode I and V)", value: "C Egyptian" },
-	{ category: "Pentatonic", name: "C Minor Pentatonic", value: "C Minor Pentatonic" },
-	{ category: "Pentatonic", name: "C Ritusen", value: "C Ritusen" },
-	// TODO: Mode III (minor without 2 and 5)
+	{ category: "Pentatonic", name: "C Major Pentatonic (Mode I)" },
+	{ category: "Pentatonic", name: "C Egyptian/Dorian Pentatonic (Mode II)" },
+	{ category: "Pentatonic", name: "C Minor Pentatonic (Modes III/V)" },
+	{ category: "Pentatonic", name: "C Ritusen (Mode IV)" },
 ].map(e => ({ category: e.category, name: e.name, value: e.value || e.name.split(/[\(\,\/]/)[0].trim() }))
 
 export const chords = [
@@ -49,5 +48,5 @@ export const chords = [
 	{ category: "Seventh", name: "C Major 7",    value: "Cmaj7" },
 	{ category: "Seventh", name: "C Minor 7",    value: "Cm7" },
 	{ category: "Seventh", name: "C Dominant 7", value: "Cdom" },
-	{ category: "Seventh", name: "C Minor maj7", value: "CmMaj7" },
-]
+	{ category: "Seventh", name: "C Minor Maj7", value: "Cm/ma7" },
+].map(e => ({ category: e.category, name: e.name, value: e.value || e.name.split(/[\(\,\/]/)[0].trim() }))

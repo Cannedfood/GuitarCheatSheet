@@ -35,6 +35,11 @@ function shuffle<T>(array: T[]): T[] {
 }
 
 export
+function sample<T>(array: T[]): T {
+	return array[Math.floor(Math.random() * array.length)]
+}
+
+export
 function remove<T>(array: T[], filter: (v: T) => boolean) {
 	let n = 0;
 	for(let i = 0; i < array.length; i++) {
@@ -48,7 +53,15 @@ function remove<T>(array: T[], filter: (v: T) => boolean) {
 }
 
 export
+function flatten<T>(array: T[]) { return [].concat(...array); }
+
+export
 function uniq<T>(array: T[]): T[] { return [...new Set(array)]; }
+
+export
+function titleCase(str: string) {
+	return str.replace(/\b\w/g, letter => letter.toUpperCase());
+}
 
 export
 function debounce<T extends Function>(cb: T, wait = 20) {
@@ -71,3 +84,29 @@ function fallback(...args: any[]) {
 
 export
 function log(base: number, value: number) { return Math.log2(value) / Math.log2(base); }
+
+export
+function commonPrefixLength(a: string, b: string) {
+	let maxLength = Math.min(a.length, b.length);
+	for(let i = 0; i < maxLength; i++) {
+		if(a[i] !== b[i])
+			return i;
+	}
+	return maxLength;
+}
+
+export
+function commonSuffixLength(a: string, b: string) {
+	let maxLength = Math.min(a.length, b.length);
+	for(let i = 0; i < maxLength; i++) {
+		if(a[a.length - 1 - i] !== b[b.length - 1 - i])
+			return i;
+	}
+	return maxLength;
+}
+
+export
+function shellSimilarity(a: string, b: string) {
+	let common = commonPrefixLength(a, b) + commonSuffixLength(a, b);
+	return common / Math.max(a.length, b.length);
+}

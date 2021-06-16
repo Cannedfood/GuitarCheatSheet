@@ -11,12 +11,6 @@ fretboard(
 a.flat-button(@click="selected = []") Clear
 //- a.flat-button(@click="state.notes.oneNotePerString = !state.notes.oneNotePerString") One note per string: {{state.notes.oneNotePerString? 'Yes':'No'}}
 span.big(v-if="looksLikeChordsHtml" v-html="looksLikeChordsHtml")
-div
-	select(v-model="state.notes.practicedString")
-		option(v-for="idx in tuning.length" :value="idx") {{tuning[idx]}}
-	input.right.w-1(v-model="state.notes.noteDelay")
-	span sec
-	a.flat-button Start
 </template>
 
 <style lang="scss">

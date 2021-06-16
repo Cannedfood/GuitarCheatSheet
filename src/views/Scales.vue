@@ -20,6 +20,7 @@ import { computed, defineComponent, inject, reactive } from "vue";
 import fuzzyMatch from "../util/FuzzyMatch";
 import { labelNotesWithDegrees } from "../util/Names";
 import { scales } from '../util/Presets'
+import { titleCase } from "../util/Util";
 
 export default defineComponent({
 	setup() {
@@ -28,8 +29,15 @@ export default defineComponent({
 			state,
 			notes: computed(() => labelNotesWithDegrees(Scale.get(state.scale.trim().toLowerCase()))),
 			didYouMean: computed(() => {
-				if(data.notes.length != 0) return [];
-				return fuzzyMatch(Scale.names(), state.scale);
+				if(data.notes.length > 0) return [];
+
+				let [success, chroma, scale] = state.scale.match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
+				if(!success) return [];
+
+				return (
+					fuzzyMatch(Scale.names(), scale, 3)
+					.map(n => titleCase(`${chroma} ${n}`))
+				)
 			}),
 			scales
 		});

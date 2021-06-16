@@ -3,6 +3,11 @@ body {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+h1, h2, h3, h4, h5, h6 {
+	margin: 0;
+	margin-bottom: .5em;
+}
+
 :not(:fullscreen) .if-fullscreen { display: none; }
 :fullscreen .not-fullscreen { display: none; }
 

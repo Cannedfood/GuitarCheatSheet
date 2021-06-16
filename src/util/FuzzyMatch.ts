@@ -1,21 +1,18 @@
-import levenshtein from "js-levenshtein";
+import { shellSimilarity } from './Util'
 
 export default
-function fuzzyMatch(names: string[], name: string) {
-	name = name.toLowerCase().trimLeft();
+function fuzzyMatch(names: string[], lookUp: string, numResults = 100) {
+	lookUp = lookUp.toLowerCase().trim();
 	try {
-		let [chroma, lookUp] = name.split(/ (.*)/);
 		return (
 			names
 			.map(n => ({
-				dist: levenshtein(n, lookUp),
+				dist: shellSimilarity(n, lookUp),
 				value: n
 			}))
-			.sort((a, b) => a.dist - b.dist)
+			.sort((a, b) => b.dist - a.dist)
 			.map(v => v.value)
-			.slice(0, 3)
-			.map(n => `${chroma} ${n}`)
-			.map(n => n.replace(/\b\w/g, letter => letter.toUpperCase()))
+			.slice(0, numResults)
 		)
 	}
 	catch(e) {

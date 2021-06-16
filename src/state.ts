@@ -1,6 +1,6 @@
 import persistentState from './util/PersistentState'
 
-const state = persistentState("state-v22", {
+const state = persistentState("state-v100", {
 	lastPath: '/scales',
 	startFret: 0,
 	endFret: 14,
@@ -13,7 +13,10 @@ const state = persistentState("state-v22", {
 	practice: {
 		range: { string: 0, endString: 0, fret: 0, endFret: 12 },
 		delay: 1000,
+		randomMode: 'shuffle'
 	},
-}, { versionPattern: /^state-v*/ });
+}, { versionPattern: /^state-v/ });
 
 export default state;
+
+export type State = typeof state;

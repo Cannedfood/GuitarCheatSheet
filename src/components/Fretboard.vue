@@ -224,8 +224,8 @@ export default defineComponent({
 		function position(e: MouseEvent) {
 			const s = fretboard.value.getBoundingClientRect();
 
-			const x = (e.pageX - s.x) / s.width * props.width;
-			const y = (e.pageY - s.y) / s.height * props.height;
+			const x = (e.clientX - s.left) / s.width * props.width;
+			const y = (e.clientY - s.top) / s.height * props.height;
 			const fret   = positionToFret(x);
 			const string = positionToString(y);
 			const note = noteAt(tuning.value, string, fret);
