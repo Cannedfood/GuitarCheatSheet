@@ -84,8 +84,7 @@ export default defineComponent({
 			let allOptions = [] as Position[];
 			let remainingOptions = [] as Position[];
 			let introducedOptions = [] as Position[];
-			watch([state.practice.range, state.practice.randomMode],
-				() => {
+			watchEffect(() => {
 					allOptions = [];
 					remainingOptions = [];
 					introducedOptions = [];
@@ -98,8 +97,7 @@ export default defineComponent({
 					for(let string = sstart; string <= send; string++)
 						for(let fret = fstart; fret <= fend; fret++)
 							allOptions.push({ string, fret });
-				},
-				{ deep: true }
+				}
 			);
 
 			while(running) {
@@ -113,8 +111,6 @@ export default defineComponent({
 				else if(state.practice.randomMode == "random") {
 					next = sample(allOptions);
 				}
-
-
 
 				data.note.string = next.string;
 				data.note.fret = next.fret;
