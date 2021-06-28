@@ -29,15 +29,21 @@ export default defineComponent({
 			state,
 			notes: computed(() => labelNotesWithDegrees(Scale.get(state.scale.trim().toLowerCase()))),
 			didYouMean: computed(() => {
-				if(data.notes.length > 0) return [];
+				try {
+					if(data.notes.length > 0) return [];
 
-				let [success, chroma, scale] = state.scale.match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
-				if(!success) return [];
-
-				return (
-					fuzzyMatch(Scale.names(), scale, 3)
-					.map(n => titleCase(`${chroma} ${n}`))
-				)
+					let [success, chroma, scale] = state.scale.match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
+					if(!success) return [];
+	
+					return (
+						fuzzyMatch(Scale.names(), scale, 3)
+						.map(n => titleCase(`${chroma} ${n}`))
+					)
+				}
+				catch(e) {
+					console.error(e);
+					return [];
+				}
 			}),
 			scales
 		});

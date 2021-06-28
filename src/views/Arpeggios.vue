@@ -36,16 +36,20 @@ export default defineComponent({
 				Chord.get(state.arpeggio.trim())
 			)),
 			didYouMean: computed(() => {
-				if(data.notes.length > 0) return [];
-
-				let [success, chroma, lookUp] = state.arpeggio.match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
-				if(!success) return [];
-
-				return fuzzyMatch(chordNames, lookUp, 5).map(result => titleCase(`${chroma} ${result}`))
-				// console.log(ChordDictionary.names());
-
-				// return fuzzyMatch(ChordDictionary.names(), state.arpeggio)
-				// 	.map(n => titleCase(`${chroma} ${n}`));
+				try {
+					if(data.notes.length > 0) return [];
+					if(!state.arpeggio || typeof(state.arpeggio) !== 'string' || !state.arpeggio.match)
+						return [];
+	
+					let [success, chroma, lookUp] = state.arpeggio.toString().match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
+					if(!success) return [];
+	
+					return fuzzyMatch(chordNames, lookUp, 5).map(result => titleCase(`${chroma} ${result}`))
+				}
+				catch(e) {
+					console.error(e);
+					return [];
+				}
 			}),
 			chords
 		});
