@@ -70,6 +70,11 @@ function noteAt(tuning: string[], string: number, fret: number) {
 	return Note.fromMidiSharps(Note.midi(tuning[string]) + fret);
 }
 
+export
+function isSharpOrFlat(tuning: string[], string: number, fret: number) {
+	return Note.accidentals(noteAt(tuning, string, fret))
+}
+
 const f = Math.pow(2, -1/12); // Scaling factor from fret to fret
 
 export

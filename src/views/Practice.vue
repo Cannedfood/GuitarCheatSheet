@@ -26,13 +26,17 @@ h5 Random Mode:
 	label(:for="entry[0]")
 		span {{entry[1]}}
 		span.secondary  - {{entry[2]}}
+label
+	input(type="checkbox" v-model="state.practice.onlyWholeNotes")
+	span Only Whole Notes
 </template>
 
 <script lang="ts">
 import { computed, defineComponent, inject, onUnmounted, reactive, watch, watchEffect } from "vue";
-import { parseTuning } from "../components/FretboardNotes";
+import { isSharpOrFlat, noteAt, parseTuning } from "../components/FretboardNotes";
 import { delay } from "../util/Async";
 import { fallback, sample, shuffle } from '../util/Util'
+import { State } from '../state'
 
 const randomModes = [
 	['shuffle', 'Shuffle', 'Go through all entries before a note is repeated'],
@@ -42,7 +46,7 @@ const randomModes = [
 
 export default defineComponent({
 	setup() {
-		let state = inject<any>('state')
+		let state = inject<State>('state')
 		let data = reactive({
 			state,
 			randomModes,
@@ -97,6 +101,11 @@ export default defineComponent({
 					for(let string = sstart; string <= send; string++)
 						for(let fret = fstart; fret <= fend; fret++)
 							allOptions.push({ string, fret });
+
+					if(state.practice.onlyWholeNotes) {
+						let tuning = parseTuning(state.tuning);
+						allOptions = allOptions.filter(o => !isSharpOrFlat(tuning, o.string, o.fret))
+					}
 				}
 			);
 

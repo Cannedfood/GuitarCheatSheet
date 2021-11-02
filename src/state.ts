@@ -13,7 +13,8 @@ const state = persistentState("state-v100", {
 	practice: {
 		range: { string: 0, endString: 0, fret: 0, endFret: 12 },
 		delay: 1000,
-		randomMode: 'shuffle'
+		randomMode: 'shuffle',
+		onlyWholeNotes: false,
 	},
 }, { versionPattern: /^state-v/ });
 

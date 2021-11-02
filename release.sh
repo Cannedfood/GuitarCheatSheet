@@ -16,3 +16,7 @@ for x in $(jobs -p); do kill $x; done;
 
 wait
 clear
+
+git reset
+git add ./index.html
+git commit -m "Release"
