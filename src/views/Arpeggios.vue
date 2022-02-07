@@ -10,7 +10,7 @@ div.big
 	input.serif(type="string" v-model="state.arpeggio" @keydown.tab.prevent="state.arpeggio = didYouMean[0]")
 	span.tiny.secondary(v-if="didYouMean.length")
 		span Press TAB to autocomplete:
-		a.mx-1(href="#" v-for="v in didYouMean" @click="state.scale = v") {{v}}
+		a.mx-1(href="#" v-for="v in didYouMean" @click.prevent.stop="state.arpeggio = v") {{v}}
 library(:entries="chords" v-model="state.arpeggio")
 </template>
 

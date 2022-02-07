@@ -10,7 +10,7 @@ div.big
 	input.serif(type="string" v-model="state.scale" @keydown.tab.prevent="state.scale = didYouMean[0]")
 	span.tiny.secondary(v-if="didYouMean.length")
 		span Press TAB to autocomplete:
-		a.mx-1(href="#" v-for="v in didYouMean" @click="state.scale = v") {{v}}
+		a.mx-1(href="#" v-for="v in didYouMean" @click.prevent.stop="state.scale = v") {{v}}
 library(:entries="scales" v-model="state.scale")
 </template>
 
