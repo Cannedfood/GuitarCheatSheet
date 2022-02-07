@@ -3,7 +3,8 @@
 PORT="5000"
 
 rm -r dist .parcel-cache || true
-npx parcel build src/index.html --no-scope-hoist
+npx parcel build  src/index.html || true
+npx parcel build src/index.html
 
 npx serve -l "${PORT}" dist/ &
 echo hi
