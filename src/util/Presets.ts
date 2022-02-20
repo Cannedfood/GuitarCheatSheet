@@ -21,8 +21,8 @@ export const scales = [
 	{ category: "Harmonic", name: "C Ionian #5" },
 	{ category: "Harmonic", name: "C Dorian #4" },
 	{ category: "Harmonic", name: "C Phrygian Dominant" },
-	{ category: "Harmonic", name: "C Lydian #2" },
-	{ category: "Harmonic", name: "C Superlocrian" },
+	{ category: "Harmonic", name: "C Lydian #9" },
+	{ category: "Harmonic", name: "C Ultralocrian" },
 	{ category: "Melodic",  name: "C Melodic Minor" },
 	{ category: "Melodic",  name: "C Dorian b2/Phrygian #6" },
 	{ category: "Melodic",  name: "C Lydian augmented" },
@@ -50,6 +50,6 @@ export const chords = [
 	{ category: "Seventh", name: "C Minor 7",         value: "Cm7" },
 	{ category: "Seventh", name: "C Dominant 7",      value: "Cdom" },
 	{ category: "Seventh", name: "C Minor Maj7",      value: "Cm/ma7" },
-	{ category: "Seventh", name: "C Dim7",            value: "Cm/ma7" },
+	{ category: "Seventh", name: "C Dim7",            value: "C Dim7" },
 	{ category: "Seventh", name: "C Half Diminished", value: "C m7b5" },
 ].map(e => ({ category: e.category, name: e.name, value: e.value || e.name.split(/[\(\,\/]/)[0].trim() }))
