@@ -18,7 +18,7 @@
 	display: flex;
 	flex: nowrap row;
 
-	background: gray;
+	background: #333;
 	padding-bottom: 1em;
 
 	.category{

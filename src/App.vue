@@ -38,7 +38,7 @@ nav {
 	a {
 		text-decoration: none;
 		cursor: pointer;
-		color: black;
+		color: inherit;
 		&:hover {
 			background: #0002;
 		}

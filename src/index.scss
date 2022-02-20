@@ -3,6 +3,20 @@ body {
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
+body {
+	input {
+		background: inherit;
+		color: inherit;
+	}
+	background: #222;
+	color: white;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	margin: 0;
 	margin-bottom: .5em;
@@ -48,11 +62,12 @@ input {
 	font: inherit;
 	font-size: .9em;
 	border: none;
-	border-bottom: 1px solid black;
+	border-bottom: 1px solid white;
+	margin-bottom: .3em;
 
 	&:focus {
 		border-bottom: 1px solid red;
-		box-shadow: 0 0 .5em #BBB;
+		// box-shadow: 0 0 .5em #111;
 		z-index: 1;
 	}
 }
