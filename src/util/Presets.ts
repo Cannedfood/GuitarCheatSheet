@@ -2,6 +2,7 @@ export const tunings = [
 	{ category: "Guitar",   name: "E Standard", value: "E2 A2 D3 G3 B3 E4" },
 	{ category: "Guitar",   name: "Drop D",     value: "D2 A2 D3 G3 B3 E4" },
 	{ category: "7-String", name: "B Standard", value: "B1 E2 A2 D3 G3 B3 E4" },
+	{ category: "7-String", name: "A Standard", value: "B1 E2 A2 D3 G3 B3 E4" },
 	{ category: "7-String", name: "Drop A",     value: "A1 E2 A2 D3 G3 B3 E4" },
 	{ category: "Bass",     name: "E Standard", value: "E1 A1 D2 G2" },
 	{ category: "5-String", name: "B Standard", value: "B0 E1 A1 D2 G2" },

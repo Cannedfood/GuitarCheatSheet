@@ -83,9 +83,6 @@ function fallback(...args: any[]) {
 }
 
 export
-function log(base: number, value: number) { return Math.log2(value) / Math.log2(base); }
-
-export
 function commonPrefixLength(a: string, b: string) {
 	let maxLength = Math.min(a.length, b.length);
 	for(let i = 0; i < maxLength; i++) {

@@ -75,15 +75,17 @@ function isSharpOrFlat(tuning: string[], string: number, fret: number) {
 	return Note.accidentals(noteAt(tuning, string, fret))
 }
 
-const f = Math.pow(2, -1/12); // Scaling factor from fret to fret
+const fretPositionFactor = Math.pow(2, -1/12); // Factor from fret position to fret position
+
+function log(base: number, value: number) { return Math.log2(value) / Math.log2(base); }
 
 export
 function fretboardPos(fret: number, linear = false) { //< Computes the position on the fretboard (with scale length = 1)
 	if(linear) return fret;
-	return 1 - Math.pow(f, fret);
+	return 1 - Math.pow(fretPositionFactor, fret);
 }
 export
 function invFretboardPos(x: number, linear = false) {
 	if(linear) return x;
-	return log(f, 1 - x);
+	return log(fretPositionFactor, 1 - x);
 }
