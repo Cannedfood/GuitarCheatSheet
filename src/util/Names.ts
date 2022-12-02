@@ -11,8 +11,8 @@ function intervalLongName(originalName: string) {
 		'6m': 'minor-sixth', '6M': 'major-sixth',
 		'7m': 'minor-seventh',
 		'7M': 'major-seventh',
-	};
-	return intervalNameMapping[originalName] || originalName;
+	} as { [key: string]: string };
+	return intervalNameMapping[originalName] ?? originalName;
 }
 
 export
@@ -26,8 +26,8 @@ function intervalShortName(originalName: string) {
 		'6m': '6', '6M': '6',
 		'7m': '7',
 		'7M': '7',
-	};
-	return intervalNameMapping[originalName] || originalName;
+	} as { [key: string]: string };
+	return intervalNameMapping[originalName] ?? originalName;
 }
 
 export
@@ -39,7 +39,7 @@ function labelNotesWithDegrees(noteCollection?: { notes: string[] }) {
 		'4': "#353",
 		'5': "#338",
 		'7': "#808",
-	}
+	} as { [key: string]: string };
 
 	const intervals = noteCollection.notes.map(n => Interval.distance(noteCollection.notes[0], n));
 
@@ -48,7 +48,7 @@ function labelNotesWithDegrees(noteCollection?: { notes: string[] }) {
 		return {
 			note: note,
 			text: name,
-			color: colors[name] || '#222'
+			color: colors[name] ?? '#222'
 		}
 	});
 }

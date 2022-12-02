@@ -1,3 +1,5 @@
+import './index.scss';
+
 import * as Vue from 'vue'
 
 import App from './App.vue'

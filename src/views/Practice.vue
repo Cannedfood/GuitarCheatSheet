@@ -1,3 +1,112 @@
+
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted, reactive, ref, watchEffect } from "vue";
+import { isSharpOrFlat, parseTuning } from "../components/FretboardNotes";
+import { delay } from "../util/Async";
+import { useState } from '../state'
+import type { FretboardPosition, NoteDescription } from "@/components/FretboardTypes";
+import { shuffle, sample } from "lodash";
+
+const randomModes = [
+	['shuffle', 'Shuffle', 'Go through all entries before a note is repeated'],
+	['random', 'Random', '100% random'],
+	// ['progressive', 'Progressive', 'Learn efficiently and step-by-step'],
+]
+
+const state = useState();
+
+const tuning = computed(() => parseTuning(state.tuning));
+
+const hovered = ref<FretboardPosition>();
+const note = reactive<NoteDescription>({
+	note: "",
+	fret: 0,
+	string: 0,
+	text: undefined,
+});
+
+const lastClick = ref<FretboardPosition>();
+
+const range = computed(() => Object.assign(state.practice.range, { fill: '#FFF1' }));
+
+const selectingRange = computed(() => {
+	if(!lastClick.value) return null;
+	if(!hovered.value) return null;
+
+	return {
+		fret: Math.min(lastClick.value.fret, hovered.value.fret),
+		endFret: Math.max(lastClick.value.fret, hovered.value.fret),
+		string: Math.min(lastClick.value.string, hovered.value.string),
+		endString: Math.max(lastClick.value.string, hovered.value.string),
+	};
+});
+
+function clicked(position: FretboardPosition) {
+	if(!lastClick.value) {
+		lastClick.value = position;
+	}
+	else {
+		state.practice.range = selectingRange.value!;
+		lastClick.value = undefined;
+	}
+}
+
+let running = true;
+async function run() {
+	type Position = { fret: number, string: number };
+
+	let allOptions = [] as Position[];
+	let remainingOptions = [] as Position[];
+	watchEffect(() => {
+		allOptions = [];
+		remainingOptions = [];
+
+		const sstart = state.practice.range.string    ?? 0;
+		const send   = state.practice.range.endString ?? state.practice.range.string ?? tuning.value.length - 1;
+		const fstart = state.practice.range.fret      ?? state.startFret;
+		const fend   = state.practice.range.endFret   ?? state.practice.range.fret ?? state.endFret;
+
+		for(let string = sstart; string <= send; string++)
+			for(let fret = fstart; fret <= fend; fret++)
+				allOptions.push({ string, fret });
+
+		if(state.practice.onlyWholeNotes) {
+			allOptions = allOptions.filter(o => !isSharpOrFlat(tuning.value, o.string, o.fret))
+		}
+	});
+
+	function takeNextNote() {
+		switch(state.practice.randomMode) {
+			case 'shuffle':
+				if(remainingOptions.length == 0)
+					remainingOptions = shuffle(allOptions);
+				return remainingOptions.pop();
+			case 'random':
+				return sample(allOptions);
+			default:
+				throw new Error('Unknown random mode: ' + state.practice.randomMode);
+		}
+	}
+
+	while(running) {
+		const next = takeNextNote();
+
+		if(next) {
+			note.string = next.string;
+			note.fret = next.fret;
+			note.text = "?";
+			await delay(state.practice.delay);
+			note.text = undefined;
+		}
+		await delay(state.practice.delay)
+	}
+}
+
+onMounted(() => { running = true; run() });
+onUnmounted(() => running = false)
+
+</script>
+
 <template lang="pug">
 fretboard(
 	:tuning="state.tuning"
@@ -30,114 +139,3 @@ label
 	input(type="checkbox" v-model="state.practice.onlyWholeNotes")
 	span Only Whole Notes
 </template>
-
-<script lang="ts">
-import { computed, defineComponent, inject, onUnmounted, reactive, watch, watchEffect } from "vue";
-import { isSharpOrFlat, noteAt, parseTuning } from "../components/FretboardNotes";
-import { delay } from "../util/Async";
-import { fallback, sample, shuffle } from '../util/Util'
-import { State } from '../state'
-
-const randomModes = [
-	['shuffle', 'Shuffle', 'Go through all entries before a note is repeated'],
-	['random', 'Random', '100% random'],
-	// ['progressive', 'Progressive', 'Learn efficiently and step-by-step'],
-]
-
-export default defineComponent({
-	setup() {
-		let state = inject<State>('state')
-		let data = reactive({
-			state,
-			randomModes,
-			tuning: computed(() => parseTuning(state.tuning)),
-			lastClick: null,
-			hovered: null,
-			note: {
-				fret: 0,
-				string: 0,
-				text: undefined
-			},
-			range: computed(() => Object.assign(state.practice.range, { fill: '#FFF1' })),
-			selectingRange: computed(() => {
-				if(!data.lastClick) return null;
-				if(!data.hovered) return null;
-
-				return {
-					fret: Math.min(data.lastClick.fret, data.hovered.fret),
-					endFret: Math.max(data.lastClick.fret, data.hovered.fret),
-					string: Math.min(data.lastClick.string, data.hovered.string),
-					endString: Math.max(data.lastClick.string, data.hovered.string),
-				};
-			}),
-			clicked(position) {
-				if(!data.lastClick) {
-					data.lastClick = position;
-				}
-				else {
-					state.practice.range = data.selectingRange;
-					data.lastClick = null;
-				}
-			}
-		});
-
-		let running = true;
-		async function run() {
-			type Position = { fret: number, string: number };
-
-			let allOptions = [] as Position[];
-			let remainingOptions = [] as Position[];
-			let introducedOptions = [] as Position[];
-			watchEffect(() => {
-					allOptions = [];
-					remainingOptions = [];
-					introducedOptions = [];
-
-					let sstart = fallback(state.practice.range.string, 0);
-					let send   = fallback(state.practice.range.endString, state.practice.range.string, data.tuning.length - 1);
-					let fstart = fallback(state.practice.range.fret, state.startFret);
-					let fend   = fallback(state.practice.range.endFret, state.practice.range.fret, state.endFret);
-
-					for(let string = sstart; string <= send; string++)
-						for(let fret = fstart; fret <= fend; fret++)
-							allOptions.push({ string, fret });
-
-					if(state.practice.onlyWholeNotes) {
-						let tuning = parseTuning(state.tuning);
-						allOptions = allOptions.filter(o => !isSharpOrFlat(tuning, o.string, o.fret))
-					}
-				}
-			);
-
-			while(running) {
-				let next;
-				if(state.practice.randomMode == "shuffle") {
-					if(remainingOptions.length == 0)
-						remainingOptions = shuffle([...allOptions]);
-
-					next = remainingOptions.pop()
-				}
-				else if(state.practice.randomMode == "random") {
-					next = sample(allOptions);
-				}
-
-				data.note.string = next.string;
-				data.note.fret = next.fret;
-				data.note.text = "?";
-				await delay(state.practice.delay);
-				data.note.text = undefined;
-				await delay(state.practice.delay)
-			}
-		}
-		run();
-
-		onUnmounted(() => running = false)
-
-		return data;
-	}
-})
-</script>
-
-<style lang="scss">
-
-</style>

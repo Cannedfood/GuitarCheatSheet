@@ -33,72 +33,55 @@ span.big(v-if="looksLikeChordsHtml" v-html="looksLikeChordsHtml")
 }
 </style>
 
-<script lang="ts">
-import { computed, defineComponent, inject, onUnmounted, reactive, ref } from "vue";
+<script setup lang="ts">
+import { computed, ref } from "vue";
 import { detect } from '@tonaljs/chord-detect'
 import { Note } from '@tonaljs/tonal'
 import { parseTuning } from '../components/FretboardNotes'
-import { remove, uniq } from "../util/Util";
+import { oxfordCommaOr, remove } from "../util/Util";
+import { uniq } from "lodash";
+import { useState } from "@/state";
+import type { FretboardPosition } from "@/components/FretboardTypes";
 
-function oxfordCommaOr(array: string[]) {
-	if(array.length == 1)
-		return array[0];
+const state = useState();
 
-	let result = "";
-	for(let i = 0; i < array.length; i++) {
-		if(i == array.length - 1)
-			result += ", or ";
-		else if(i > 0)
-			result += ", ";
-		result += array[i];
+const hovered = ref<FretboardPosition>();
+const selected = state.notes.selected as any[];
+
+function toggle(n: FretboardPosition) {
+	if(!remove<any>(selected, x => x.fret == n.fret && x.string == n.string)) {
+		if(state.notes.oneNotePerString)
+			remove<any>(selected, x => x.string == n.string);
+		selected.push(n);
 	}
-	return result;
 }
 
-export default defineComponent({
-	setup(props) {
-		let state = inject<any>('state');
+const notes = computed(() => {
+	const result = selected.map(n => ({
+		fret: n.fret,
+		string: n.string,
+		text: undefined as string|undefined, // n.note,
+		color: '#250'
+	}));
 
-		let data = reactive({
-			state,
-			hovered: null,
-			highlight: null,
-			selected: state.notes.selected as any[],
-			toggle(n) {
-				if(!remove<any>(data.selected, x => x.fret == n.fret && x.string == n.string)) {
-					if(state.notes.oneNotePerString)
-						remove<any>(data.selected, x => x.string == n.string);
-					data.selected.push(n);
-				}
-			},
-			notes: computed(() => {
-				let result = data.selected.map(n => ({
-					fret: n.fret,
-					string: n.string,
-					// text: n.note,
-					color: '#250'
-				}));
-
-				if(data.hovered) {
-					result.push({
-						fret: data.hovered.fret,
-						string: data.hovered.string,
-						text: data.hovered.note,
-						color: data.selected.filter(n => n.string == data.hovered.string && n.fret == data.hovered.fret).length? '#BB0' : '#F00',
-					});
-				}
-				return result;
-			}),
-			looksLikeChordsHtml: computed(() => {
-				let pitches = data.selected.map(n => Note.pitchClass(n.note));
-				if(pitches.length == 0) return;
-				let chords = detect(uniq(pitches)).map(c => `<span class="chordname">${c}</span>`);
-				if(chords.length == 0) return;
-				return `This looks like a ${oxfordCommaOr(chords)} chord`;
-			}),
-			tuning: computed(() => parseTuning(state.tuning)),
+	const h = hovered.value;
+	if(h) {
+		result.push({
+			fret: h.fret,
+			string: h.string,
+			text: h.note,
+			color: selected.filter(n => n.string == h.string && n.fret == h.fret).length? '#BB0' : '#F00',
 		});
-		return data;
 	}
-})
+	return result;
+});
+const looksLikeChordsHtml = computed(() => {
+	let pitches = selected.map(n => Note.pitchClass(n.note));
+	if(pitches.length == 0) return;
+	let chords = detect(uniq(pitches)).map(c => `<span class="chordname">${c}</span>`);
+	if(chords.length == 0) return;
+	return `This looks like a ${oxfordCommaOr(chords)} chord`;
+});
+const tuning = computed(() => parseTuning(state.tuning));
+
 </script>

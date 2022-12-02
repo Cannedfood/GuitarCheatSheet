@@ -1,4 +1,5 @@
-export function generate<T>(fn: (i: number) => T, n: number, n2?: number) {
+export
+function generate<T>(fn: (i: number) => T, n: number, n2?: number) {
 	let start = 0;
 	let end = n;
 
@@ -16,30 +17,6 @@ export function generate<T>(fn: (i: number) => T, n: number, n2?: number) {
 }
 
 export
-function shuffle<T>(array: T[]): T[] {
-	let currentIndex = array.length;
-	let randomIndex: number = undefined;
-
-	// While there remain elements to shuffle...
-	while (currentIndex !== 0) {
-		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex--;
-
-		// And swap it with the current element.
-		[array[currentIndex], array[randomIndex]] = [
-			array[randomIndex], array[currentIndex]];
-	}
-
-	return array;
-}
-
-export
-function sample<T>(array: T[]): T {
-	return array[Math.floor(Math.random() * array.length)]
-}
-
-export
 function remove<T>(array: T[], filter: (v: T) => boolean) {
 	let n = 0;
 	for(let i = 0; i < array.length; i++) {
@@ -53,33 +30,8 @@ function remove<T>(array: T[], filter: (v: T) => boolean) {
 }
 
 export
-function flatten<T>(array: T[]) { return [].concat(...array); }
-
-export
-function uniq<T>(array: T[]): T[] { return [...new Set(array)]; }
-
-export
 function titleCase(str: string) {
 	return str.replace(/\b\w/g, letter => letter.toUpperCase());
-}
-
-export
-function debounce<T extends Function>(cb: T, wait = 20) {
-    let h: NodeJS.Timeout;
-    let callable = (...args: any) => {
-        clearTimeout(h);
-        h = setTimeout(() => cb(...args), wait);
-    };
-    return <T>(<any>callable);
-}
-
-export
-function fallback(...args: any[]) {
-	for(let v of args) {
-		if(v !== undefined && v !== null)
-			return v;
-	}
-	return undefined;
 }
 
 export
@@ -106,4 +58,20 @@ export
 function shellSimilarity(a: string, b: string) {
 	let common = commonPrefixLength(a, b) + commonSuffixLength(a, b);
 	return common / Math.max(a.length, b.length);
+}
+
+export
+function oxfordCommaOr(array: string[]) {
+	if(array.length == 1)
+		return array[0];
+
+	let result = "";
+	for(let i = 0; i < array.length; i++) {
+		if(i == array.length - 1)
+			result += ", or ";
+		else if(i > 0)
+			result += ", ";
+		result += array[i];
+	}
+	return result;
 }

@@ -8,7 +8,8 @@ const state = persistentState("state-v100", {
 	scale: "C Major",
 	arpeggio: "CMaj7",
 	notes: {
-		selected: []
+		selected: [],
+		oneNotePerString: false,
 	},
 	practice: {
 		range: { string: 0, endString: 0, fret: 0, endFret: 12 },
@@ -21,3 +22,7 @@ const state = persistentState("state-v100", {
 export default state;
 
 export type State = typeof state;
+
+export function useState() {
+	return state;
+}

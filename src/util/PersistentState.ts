@@ -1,6 +1,6 @@
 import { reactive, watch } from "vue";
 import deepmerge from 'deepmerge'
-import { debounce } from "./Util";
+import { debounce } from "lodash";
 
 interface PersistentStateOptions {
 	debounceMs?: number;
@@ -18,7 +18,7 @@ function persistentState<T extends Object>(name: string, stateDefaults: T, optio
 
 	if(options.versionPattern) {
 		for(let i = 0; i < localStorage.length; i++) {
-			let key = localStorage.key(i);
+			const key = localStorage.key(i)!;
 			if(options.versionPattern.test(key) && key != name) {
 				console.log(`Remove old state '${key}'`)
 				localStorage.removeItem(key);
@@ -27,7 +27,7 @@ function persistentState<T extends Object>(name: string, stateDefaults: T, optio
 	}
 
 	// Try load state
-	let entry = localStorage.getItem(name);
+	const entry = localStorage.getItem(name);
 	if(entry) {
 		try {
 			stateDefaults = deepmerge(stateDefaults, JSON.parse(entry)) as T;
@@ -41,9 +41,14 @@ function persistentState<T extends Object>(name: string, stateDefaults: T, optio
 	state = reactive(stateDefaults) as T;
 
 	// Save state when changed
-	watch(() => state, debounce(() => {
-		localStorage.setItem(name, JSON.stringify(state));
-	}, options.debounceMs), { deep: true })
+	watch(
+		() => state,
+		debounce(
+			() => localStorage.setItem(name, JSON.stringify(state)),
+			options.debounceMs
+		),
+		{ deep: true }
+	);
 
 	return state;
 }

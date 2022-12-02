@@ -11,11 +11,12 @@ router-view
 </template>
 
 <script lang="ts">
-import { defineComponent, inject, reactive } from "vue";
+import { defineComponent, reactive } from "vue";
+import { useState } from "./state";
 
 export default defineComponent({
 	setup(props) {
-		let state = inject<any>("state");
+		let state = useState();
 		return reactive({
 			state,
 			enterFullscreen() {

@@ -1,5 +1,4 @@
 import { Note } from '@tonaljs/tonal'
-import { log } from '../util/Util';
 
 interface FretNote {
 	note: string;
@@ -24,11 +23,11 @@ function parseTuning(text: string) {
 export function findNoteOnFretboard(tuning: string[], minFret: number, maxFret: number, note: string): FretNote[] {
 	let result = [] as FretNote[];
 
-	const noteChroma = Note.chroma(note);
+	const noteChroma = Note.chroma(note)!;
 	const noteOctave = Note.octave(note);
 
 	for(let str = 0; str < tuning.length; str++) {
-		const strChroma = Note.chroma(tuning[str]);
+		const strChroma = Note.chroma(tuning[str])!;
 		const strOctave = Note.octave(tuning[str]);
 
 		const minFretChroma = (strChroma + minFret) % 12;
@@ -67,7 +66,7 @@ export function findNoteOnFretboard(tuning: string[], minFret: number, maxFret: 
 
 export
 function noteAt(tuning: string[], string: number, fret: number) {
-	return Note.fromMidiSharps(Note.midi(tuning[string]) + fret);
+	return Note.fromMidiSharps(Note.midi(tuning[string])! + fret);
 }
 
 export

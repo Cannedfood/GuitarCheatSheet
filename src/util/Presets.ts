@@ -1,10 +1,17 @@
 export const tunings = [
+	// Guitar
 	{ category: "Guitar",   name: "E Standard", value: "E2 A2 D3 G3 B3 E4" },
+	{ category: "Guitar",   name: "D Standard", value: "D2 G2 C3 F3 A3 D4" },
+	{ category: "Guitar",   name: "C Standard", value: "C2 F2 A#2 D#3 G3 C4" },
 	{ category: "Guitar",   name: "Drop D",     value: "D2 A2 D3 G3 B3 E4" },
+
 	{ category: "7-String", name: "B Standard", value: "B1 E2 A2 D3 G3 B3 E4" },
 	{ category: "7-String", name: "A Standard", value: "B1 E2 A2 D3 G3 B3 E4" },
 	{ category: "7-String", name: "Drop A",     value: "A1 E2 A2 D3 G3 B3 E4" },
+
+	// Bass
 	{ category: "Bass",     name: "E Standard", value: "E1 A1 D2 G2" },
+
 	{ category: "5-String", name: "B Standard", value: "B0 E1 A1 D2 G2" },
 	{ category: "5-String", name: "Drop A",     value: "A0 E1 A1 D2 G2" },
 ]
@@ -53,4 +60,10 @@ export const chords = [
 	{ category: "Seventh", name: "C Minor Maj7",      value: "Cm/ma7" },
 	{ category: "Seventh", name: "C Dim7",            value: "C Dim7" },
 	{ category: "Seventh", name: "C Half Diminished", value: "C m7b5" },
+
+	{ category: "Triad Add", name: "C Add 2", value: "C add2" },
+	{ category: "Triad Add", name: "C Add 4", value: "C add" },
+	{ category: "Triad Add", name: "C Add 6", value: "C add6" },
+
+	{ category: "Seventh Add", name: "C9", value: "C Maj9" },
 ].map(e => ({ category: e.category, name: e.name, value: e.value || e.name.split(/[\(\,\/]/)[0].trim() }))

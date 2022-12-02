@@ -15,20 +15,20 @@ library(:entries="chords" v-model="state.arpeggio")
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, reactive } from "vue";
+import { computed, defineComponent, reactive } from "vue";
 import { Chord, ChordDictionary } from '@tonaljs/tonal'
 import { labelNotesWithDegrees } from '../util/Names'
 import fuzzyMatch from '../util/FuzzyMatch'
 import { chords } from '../util/Presets'
-import { flatten, titleCase, uniq } from "../util/Util";
+import { titleCase } from "../util/Util";
+import { uniq } from 'lodash'
+import { useState } from "@/state";
 
-let chordNames = uniq(flatten(
-	ChordDictionary.names().map(name => [name, ...ChordDictionary.get(name).aliases]))
-);
+let chordNames = uniq(ChordDictionary.names().flatMap(name => [name, ...ChordDictionary.get(name).aliases]));
 
 export default defineComponent({
 	setup(props) {
-		let state = inject<any>('state');
+		let state = useState();
 		let data = reactive({
 			state,
 			notes: computed(() => labelNotesWithDegrees(
@@ -41,7 +41,7 @@ export default defineComponent({
 					if(!state.arpeggio || typeof(state.arpeggio) !== 'string' || !state.arpeggio.match)
 						return [];
 	
-					let [success, chroma, lookUp] = state.arpeggio.toString().match(/^([A-Ga-g][b,#]?)\s*(.+)$/);
+					const [success, chroma, lookUp] = state.arpeggio.toString().match(/^([A-Ga-g][b,#]?)\s*(.+)$/)!;
 					if(!success) return [];
 	
 					return fuzzyMatch(chordNames, lookUp, 5).map(result => titleCase(`${chroma} ${result}`))
@@ -58,6 +58,3 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss">
-
-</style>

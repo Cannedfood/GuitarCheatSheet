@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { useState } from "@/state";
+import { tunings } from '../util/Presets'
+
+const state = useState();
+
+</script>
+
 <template lang="pug">
 .settings
 	.row.big
@@ -12,16 +20,3 @@
 	.big Tuning presets:
 	library(:entries="tunings" v-model="state.tuning")
 </template>
-
-<script lang="ts">
-import { defineComponent, inject } from "vue";
-import { tunings } from '../util/Presets'
-
-export default defineComponent({
-	setup() { return { state: inject('state'), tunings } }
-})
-</script>
-
-<style lang="scss">
-
-</style>
