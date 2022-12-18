@@ -61,9 +61,10 @@ export const chords = [
 	{ category: "Seventh", name: "C Dim7",            value: "C Dim7" },
 	{ category: "Seventh", name: "C Half Diminished", value: "C m7b5" },
 
-	{ category: "Triad Add", name: "C Add 2", value: "C add2" },
-	{ category: "Triad Add", name: "C Add 4", value: "C add" },
-	{ category: "Triad Add", name: "C Add 6", value: "C add6" },
+	{ category: "Triad Add", name: "C Add 2", value: "Cadd2" },
+	{ category: "Triad Add", name: "C Add 6", value: "Cadd6" },
+	{ category: "Triad Add", name: "Cm Add 6", value: "Cm6" },
 
-	{ category: "Seventh Add", name: "C9", value: "C Maj9" },
+	{ category: "Seventh Add", name: "C9", value: "Cmaj9" },
+	{ category: "Seventh Add", name: "Cm9", value: "Cm9" },
 ].map(e => ({ category: e.category, name: e.name, value: e.value || e.name.split(/[\(\,\/]/)[0].trim() }))
