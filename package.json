@@ -13,10 +13,10 @@
   "devDependencies": {
     "@tonaljs/tonal": "^4.6.0",
     "@types/lodash": "^4.14.191",
-    "@vitejs/plugin-vue": "^3.2.0",
+    "@vitejs/plugin-vue": "latest",
     "deepmerge": "^4.2.2",
     "pug": "^3.0.2",
-    "sass": "1.32.13",
-    "vite": "^3.2.4"
+    "sass": "latest",
+    "vite": "latest"
   }
 }
