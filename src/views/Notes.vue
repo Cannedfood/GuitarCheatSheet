@@ -1,6 +1,5 @@
 <template lang="pug">
 fretboard(
-	v-if="state.mode != 'settings'"
 	:tuning="state.tuning"
 	:minFret="+state.startFret"
 	:maxFret="+state.endFret"
@@ -35,7 +34,7 @@ span.big(v-if="looksLikeChordsHtml" v-html="looksLikeChordsHtml")
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { detect } from '@tonaljs/chord-detect'
+import { detect } from '@tonaljs/chord'
 import { Note } from '@tonaljs/tonal'
 import { parseTuning } from '../components/FretboardNotes'
 import { oxfordCommaOr, remove } from "../util/Util";

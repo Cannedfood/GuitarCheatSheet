@@ -1,5 +1,6 @@
 {
   "license": "GPLv3",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,6 +15,7 @@
     "@tonaljs/tonal": "^4.6.0",
     "@types/lodash": "^4.14.191",
     "@vitejs/plugin-vue": "latest",
+    "@vue/language-plugin-pug": "^1.8.27",
     "deepmerge": "^4.2.2",
     "pug": "^3.0.2",
     "sass": "latest",

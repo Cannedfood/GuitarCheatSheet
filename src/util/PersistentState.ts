@@ -1,5 +1,5 @@
 import { reactive, watch } from "vue";
-import deepmerge from 'deepmerge'
+import deepmerge from "deepmerge";
 import { debounce } from "lodash";
 
 interface PersistentStateOptions {
@@ -7,20 +7,26 @@ interface PersistentStateOptions {
 	versionPattern?: RegExp;
 }
 
-export default
-function persistentState<T extends Object>(name: string, stateDefaults: T, options?: PersistentStateOptions): T {
-	options = Object.assign({
-		debounceMs: 300,
-		clear: null
-	}, options)
+export default function persistentState<T extends Object>(
+	name: string,
+	stateDefaults: T,
+	options?: PersistentStateOptions,
+): T {
+	options = Object.assign(
+		{
+			debounceMs: 300,
+			clear: null,
+		},
+		options,
+	);
 
 	let state = stateDefaults;
 
-	if(options.versionPattern) {
-		for(let i = 0; i < localStorage.length; i++) {
+	if (options.versionPattern) {
+		for (let i = 0; i < localStorage.length; i++) {
 			const key = localStorage.key(i)!;
-			if(options.versionPattern.test(key) && key != name) {
-				console.log(`Remove old state '${key}'`)
+			if (options.versionPattern.test(key) && key != name) {
+				console.log(`Remove old state '${key}'`);
 				localStorage.removeItem(key);
 			}
 		}
@@ -28,11 +34,10 @@ function persistentState<T extends Object>(name: string, stateDefaults: T, optio
 
 	// Try load state
 	const entry = localStorage.getItem(name);
-	if(entry) {
+	if (entry) {
 		try {
 			stateDefaults = deepmerge(stateDefaults, JSON.parse(entry)) as T;
-		}
-		catch(e) {
+		} catch (e) {
 			console.error(`Failed parsing persistent state "${name}"`, e);
 		}
 	}
@@ -45,11 +50,10 @@ function persistentState<T extends Object>(name: string, stateDefaults: T, optio
 		() => state,
 		debounce(
 			() => localStorage.setItem(name, JSON.stringify(state)),
-			options.debounceMs
+			options.debounceMs,
 		),
-		{ deep: true }
+		{ deep: true },
 	);
 
 	return state;
 }
-

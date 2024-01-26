@@ -1,11 +1,11 @@
 export type Note = string | NoteDescription;
 
 export interface NoteDescription {
-	note: string,
-	fret?: number,
-	string?: number,
-	color?: string,
-	text?: string,
+	note: string;
+	fret?: number;
+	string?: number;
+	color?: string;
+	text?: string;
 }
 
 export interface Highlight {
@@ -18,9 +18,9 @@ export interface Highlight {
 }
 
 export interface FretboardPosition {
-    x: number;
-    y: number;
-    fret: number;
-    string: number;
-    note: string;
+	x: number;
+	y: number;
+	fret: number;
+	string: number;
+	note: string;
 }
